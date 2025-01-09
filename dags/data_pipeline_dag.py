@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from extract_postgres_data  import extract_postgres_data
-from extract_mongo_data import extract_mongo_data
-from load_to_clickhouse_bronze import load_to_clickhouse_bronze
-from process_to_silver_layer import process_to_silver_layer
-from generate_reports import generate_reports
+from tasks.schema_creation import create_clickhouse_schema
+from tasks.extract_postgres_data import extract_postgres_data 
+from tasks.extract_mongo_data import extract_mongo_data 
+from tasks.load_to_clickhouse_bronze import load_to_clickhouse_bronze 
+from tasks.process_to_silver_layer import process_to_silver_layer 
+from tasks.generate_reports import generate_reports
 
 # Default arguments for the DAG
 default_args = {
@@ -18,14 +19,19 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
-# Instantiate the DAG
-dag = DAG(
-    'data_pipeline_dag',
-    default_args=default_args,
-    description='A complete data pipeline DAG for extracting, processing, and analyzing data',
-    schedule_interval='@daily',
+# Instantiate the DAG with a one-time schedule 
+dag = DAG( 
+    'data_pipeline_dag', 
+    default_args=default_args, 
+    description='A one-time data pipeline DAG for extracting, processing, and analyzing data',
+    schedule_interval='@once',
 )
 
+create_schema_task = PythonOperator(
+    task_id='create_clickhouse_schema',
+    python_callable=create_clickhouse_schema,
+    dag=dag,
+)
 
 # Define the PostgreSQL extraction task
 extract_postgres_task = PythonOperator(
@@ -65,4 +71,4 @@ generate_reports_task = PythonOperator(
 )
 
 # Set task dependencies
-[extract_postgres_task, extract_mongo_task] >> load_bronze_task >> process_to_silver_task >> generate_reports_task
+create_schema_task >> [extract_postgres_task, extract_mongo_task] >> load_bronze_task >> process_to_silver_task >> generate_reports_task
