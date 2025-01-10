@@ -1,16 +1,20 @@
 services:
   postgres:
     image: postgres:latest
-    container_name: postgre
+    container_name: postgres_container
     restart: always
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: channels_data
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+      - ../sql/:/docker-entrypoint-initdb.d
+
+      - /root/raw-channel-data/:/docker-entrypoint-initdb.d/raw-channel-data
 
 volumes:
   postgres_data:
