@@ -16,5 +16,11 @@ services:
 
       - /root/raw-channel-data/:/docker-entrypoint-initdb.d/raw-channel-data
 
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
 volumes:
   postgres_data:
