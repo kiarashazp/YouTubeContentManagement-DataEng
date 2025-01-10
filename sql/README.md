@@ -19,6 +19,7 @@ This folder contains SQL initialization script for our PostgreSQL service in Doc
    - We remove extra columns using [**csvcut**](https://csvkit.readthedocs.io/en/latest/scripts/csvcut.html).  
    - The command used:
      ```bash
-     csvcut -c 2,8,9,10,12,14,16,17 channels_export.csv > channels_stripped.csv
-     ```
+      csvcut -c 2,8,9,11,12,14,16,17 channels_export.csv > raw-channel-data/channels_stripped.csv
+      ```
+
    - This ensures only the 8 columns needed by `\COPY` end up in `channels_stripped.csv`.
