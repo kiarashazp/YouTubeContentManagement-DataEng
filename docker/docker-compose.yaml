@@ -12,7 +12,7 @@ services:
     volumes:
       - /root/postgres_data:/var/lib/postgresql/data
 
-      - /root/YouTubeContentManagement-DataEng/sql/:/docker-entrypoint-initdb.d # subject to chanage based on repo location on host
+      - /root/YouTubeContentManagement-DataEng/sql/postgres/:/docker-entrypoint-initdb.d # subject to chanage based on repo location on host
 
       - /root/raw-channel-data/:/docker-entrypoint-initdb.d/raw-channel-data
 
