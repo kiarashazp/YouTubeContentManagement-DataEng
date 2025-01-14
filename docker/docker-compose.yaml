@@ -245,4 +245,4 @@ services:
 volumes:
   postgres_data:
   mongo_data:
-  clickhouse_data
+  clickhouse_data:
