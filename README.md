@@ -10,7 +10,6 @@ This project sets up and manages a data pipeline using Apache Airflow. The pipel
 ## Directory Structure
 project-root/
 │
-│
 ├── config/
 │
 │── mongodb/
@@ -21,7 +20,7 @@ project-root/
 │
 ├── docker/
 │   ├── Dockerfile
-│   ├── docker-compose.yml
+│   ├── docker-compose.yaml
 │
 │── workflow/
 │    ├──  tasks/
