@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 # Start MongoDB in the background
 mongod --bind_ip_all &
