@@ -104,7 +104,7 @@ services:
         soft: 262144
         hard: 262144
     volumes:
-      - clickhouse-data:/var/lib/clickhouse
+      - /root/YouTubeContentManagement-DataEng/data/db/clickhouse:/var/lib/clickhouse
 
   airflow-webserver:
     <<: *airflow-common
