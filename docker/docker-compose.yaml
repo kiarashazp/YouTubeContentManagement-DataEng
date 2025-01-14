@@ -90,13 +90,21 @@ services:
     restart: always
 
   clickhouse:
-    image: yandex/clickhouse-server:22.7.3.5
-    container_name: clickhouse
+    image: clickhouse/clickhouse-server:22.2.3.5
+    container_name: clickhouse_container
     ports:
       - "8123:8123"
       - "9000:9000"
+      - "9009:9009"
+    environment:
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
     volumes:
-      - clickhouse_data:/var/lib/clickhouse
+      - clickhouse-data:/var/lib/clickhouse
 
   airflow-webserver:
     <<: *airflow-common
