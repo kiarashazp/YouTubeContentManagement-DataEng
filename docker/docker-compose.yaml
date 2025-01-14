@@ -33,6 +33,7 @@ x-airflow-common:
 services:
   postgres:
     image: postgres:17.2
+    container_name: postgres_container
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -70,12 +71,23 @@ services:
     restart: always
 
   mongo:
-    image: mongo:6.0
-    container_name: mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
+    image: mongo:4.0
+      container_name: mongodb_container
+      environment:
+        MONGO_USER: ${MONGO_USER}
+        MONGO_PASSWORD: ${MONGO_PASSWORD}
+        MONGO_DB: ${MONGO_DB}
+      ports:
+        - "27017:27017"
+      volumes:
+        - /root/YouTubeContentManagement-DataEng/data/db/videos:/data/db
+      healthcheck:
+        test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+        start_period: 30s
+      restart: always
 
   clickhouse:
     image: yandex/clickhouse-server:22.7.3.5
