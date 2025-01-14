@@ -40,10 +40,9 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - /root/postgres_data:/var/lib/postgresql/data
-      - /root/raw-channel-data/:/docker-entrypoint-initdb.d/raw-channel-data
-      # subject to chanage based on repo location on host:
-      - /root/YouTubeContentManagement-DataEng/sql/postgres/:/docker-entrypoint-initdb.d 
+      - /root/YouTubeContentManagement-DataEng/data/db/channels:/var/lib/postgresql/data
+      - /root/YouTubeContentManagement-DataEng/data/channels-raw/:/docker-entrypoint-initdb.d/raw-channel-data
+      - /root/YouTubeContentManagement-DataEng/sql/postgres/:/docker-entrypoint-initdb.d
 
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
