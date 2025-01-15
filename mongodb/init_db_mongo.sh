@@ -4,4 +4,4 @@
 mongod --bind_ip_all &
 
 # Restore the database mongo and insert data in mongodb
-mongorestore drop --host localhost --port 27017 --db videos --collection storage storage.bson
+mongorestore drop --host localhost --port 27017 --db videos --collection videos ../data/videos-raw/videos.bson
