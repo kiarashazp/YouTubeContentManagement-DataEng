@@ -1,5 +1,13 @@
-\connect channels_data;
+CREATE DATABASE IF NOT EXISTS airflow;
+CREATE DATABASE channels_data;
 
+CREATE USER airflow WITH PASSWORD 'airflow';
+CREATE USER admin WITH PASSWORD 'admin';
+
+GRANT ALL PRIVILEGES ON DATABASE airflow TO airflow;
+GRANT ALL PRIVILEGES ON DATABASE channels_data TO admin;
+
+\connect channels_data;
 CREATE TABLE IF NOT EXISTS channels (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,

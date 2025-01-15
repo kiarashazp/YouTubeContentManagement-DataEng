@@ -45,7 +45,7 @@ services:
       - /root/YouTubeContentManagement-DataEng/sql/postgres/:/docker-entrypoint-initdb.d
 
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: ["CMD", "pg_isready", "-U", "admin"]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -73,14 +73,15 @@ services:
     image: mongo:4.0
     network_mode: "host"
     container_name: mongodb_container
-    environment:
-      MONGO_USER: admin
-      MONGO_PASSWORD: P@ssw0rd
-      MONGO_DB: videos
+    # environment:
+      # MONGO_USER: admin
+      # MONGO_PASSWORD: P@ssw0rd
+      # MONGO_DB: videos
     ports:
       - "27017:27017"
     volumes:
       - /root/YouTubeContentManagement-DataEng/data/db/videos:/data/db
+
     healthcheck:
       test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
       interval: 30s
@@ -96,7 +97,7 @@ services:
       - "8123:8123"
       - "9000:9000"
       - "9009:9009"
-    environment:
+    # environment:
       # CLICKHOUSE_USER:
       # CLICKHOUSE_PASSWORD:
     ulimits:
@@ -249,8 +250,3 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-
-volumes:
-  postgres_data:
-  mongo_data:
-  clickhouse_data:
