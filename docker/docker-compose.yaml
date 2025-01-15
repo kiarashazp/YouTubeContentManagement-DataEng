@@ -72,6 +72,7 @@ services:
 
   mongo:
     image: mongo:4.0
+    network_mode: "host"
     container_name: mongodb_container
     environment:
       MONGO_USER: ${MONGO_USER}
