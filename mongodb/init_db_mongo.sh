@@ -4,4 +4,4 @@
 # mongod --bind_ip_all &
 
 # Restore the database mongo and insert data in mongodb
-mongorestore drop --host localhost --port 27017 --db videos --collection videos /root/YouTubeContentManagement-DataEng/data/videos-raw/videos
+mongorestore --drop --host localhost --nsInclude=videos.videos /root/YouTubeContentManagement-DataEng/data/videos-raw/videos.bson
