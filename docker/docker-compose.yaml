@@ -4,8 +4,8 @@ x-airflow-common:
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres_container/airflow
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres_container/airflow
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
@@ -32,21 +32,20 @@ x-airflow-common:
 
 services:
   postgres:
-    image: postgres:17.2
+    image: postgres:13
     container_name: postgres_container
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
     ports:
       - "5432:5432"
     volumes:
-      - /root/YouTubeContentManagement-DataEng/data/db/channels:/var/lib/postgresql/data
+      - /root/YouTubeContentManagement-DataEng/data/db/postgres:/var/lib/postgresql/data
       - /root/YouTubeContentManagement-DataEng/data/channels-raw/:/docker-entrypoint-initdb.d/raw-channel-data
       - /root/YouTubeContentManagement-DataEng/sql/postgres/:/docker-entrypoint-initdb.d
 
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      test: ["CMD", "pg_isready", "-U", "admin"]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -71,23 +70,25 @@ services:
     restart: always
 
   mongo:
-    image: mongo:4.0
+    image: mongo:4.4
     network_mode: "host"
     container_name: mongodb_container
     environment:
-      MONGO_USER: ${MONGO_USER}
-      MONGO_PASSWORD: ${MONGO_PASSWORD}
-      MONGO_DB: ${MONGO_DB}
+      MONGO_USER: root
+      MONGO_PASSWORD: example
+      MONGO_INITDB_ROOT_USERNAME: root 
+      MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - "27017:27017"
     volumes:
       - /root/YouTubeContentManagement-DataEng/data/db/videos:/data/db
-    healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
+
+        #  healthcheck:
+        #test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+        #interval: 30s
+        #timeout: 10s
+        #retries: 5
+        #start_period: 30s
     restart: always
 
   clickhouse:
@@ -97,9 +98,9 @@ services:
       - "8123:8123"
       - "9000:9000"
       - "9009:9009"
-    environment:
-      CLICKHOUSE_USER: ${CLICKHOUSE_USER}
-      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+    # environment:
+      # CLICKHOUSE_USER:
+      # CLICKHOUSE_PASSWORD:
     ulimits:
       nofile:
         soft: 262144
@@ -250,8 +251,3 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-
-volumes:
-  postgres_data:
-  mongo_data:
-  clickhouse_data:
