@@ -10,7 +10,7 @@ def transfer_data_in_batches(**context):
 
     pg_hook = PostgresHook(postgres_conn_id='postgres_default')
 
-    total_rows_query = "SELECT COUNT(*) FROM channels_data;"
+    total_rows_query = "SELECT COUNT(*) FROM channels;"
     total_rows = pg_hook.get_first(total_rows_query)[0]
 
     offset = 0
