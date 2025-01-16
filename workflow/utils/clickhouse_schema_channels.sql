@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS channels (
     start_date_timestamp UInt64,
     followers_count Nullable(UInt64),
     country String,
-    created_at DateTime64(3, 'UTC'),
+    created_at DateTime64,
     update_count Nullable(UInt32)
 )
 ENGINE = MergeTree()
