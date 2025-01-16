@@ -9,5 +9,5 @@ CREATE TABLE IF NOT EXISTS channels (
     created_at DateTime64(3, 'UTC'),
     update_count Nullable(UInt32)
 )
-ENGINE = AggregationMergeTree()
+ENGINE = MergeTree()
 ORDER BY (id);
