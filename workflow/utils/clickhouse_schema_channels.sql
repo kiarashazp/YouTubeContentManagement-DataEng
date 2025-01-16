@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS channels (
+CREATE TABLE IF NOT EXISTS channels2 (
     id UInt64,
     username String,
     total_video_visit UInt64,
@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS channels (
     start_date_timestamp UInt64,
     followers_count Nullable(UInt64),
     country String,
-    created_at DateTime64,
+    created_at Nullable(DateTime64),
     update_count Nullable(UInt32)
 )
 ENGINE = MergeTree()
