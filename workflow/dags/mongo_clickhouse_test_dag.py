@@ -22,17 +22,21 @@ def read_from_mongo(**kwargs):
         db = client['videos']
         collection = db['videos']
         cursor = collection.find().batch_size(batch_size)
-        
+
         batches = []
-        while True:
-            batch = list(cursor.next_batch())
-            if not batch:
-                break
-            batches.append(batch)
-        
-        # Push the batches to XCom
+        while cursor.alive:  # Use cursor.alive to check if there are more documents
+            batch = []
+            for _ in range(batch_size):
+                try:
+                    doc = cursor.next()
+                    batch.append(doc)
+                except StopIteration:
+                    break
+            if batch:
+                batches.append(batch)
+
         kwargs['ti'].xcom_push(key='mongo_batches', value=batches)
-        
+
     except Exception as error:
         logger.error(f"Error extracting data from MongoDB: {error}")
         raise
