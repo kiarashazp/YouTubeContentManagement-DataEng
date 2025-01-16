@@ -40,8 +40,9 @@ services:
     image: postgres:13
     container_name: postgres_container
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
     ports:
       - "5432:5432"
     volumes:
@@ -97,15 +98,15 @@ services:
     restart: always
 
   clickhouse:
-    image: clickhouse/clickhouse-server:22.2.3.5
+    image: clickhouse/clickhouse-server:latest
     container_name: clickhouse_container
     ports:
       - "8123:8123"
       - "9000:9000"
       - "9009:9009"
-    # environment:
-      # CLICKHOUSE_USER:
-      # CLICKHOUSE_PASSWORD:
+     environment:
+       CLICKHOUSE_USER: airflow
+       CLICKHOUSE_PASSWORD: airflow
     ulimits:
       nofile:
         soft: 262144
@@ -117,7 +118,7 @@ services:
     <<: *airflow-common
     command: webserver
     ports:
-      - "9090:8080"
+      - "8080:8080"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 30s
