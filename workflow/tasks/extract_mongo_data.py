@@ -1,4 +1,4 @@
-from airflow.hooks.mongo_hook import MongoHook
+from airflow.providers.mongo.hooks.mongo import MongoHook
 from airflow.models import Variable
 import logging
 
