@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS airflow;
+CREATE DATABASE airflow;
 CREATE DATABASE channels_data;
 
 CREATE USER airflow WITH PASSWORD 'airflow';
