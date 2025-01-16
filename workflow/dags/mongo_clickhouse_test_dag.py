@@ -4,6 +4,12 @@ from airflow.operators.python_operator import PythonOperator
 from datetime import datetime
 from clickhouse_driver import Client
 
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 # Task to read from MongoDB
 def read_from_mongo(**kwargs):
