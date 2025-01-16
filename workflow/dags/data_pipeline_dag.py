@@ -2,12 +2,12 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
-from workflow.tasks import create_clickhouse_schema
-from workflow.tasks import extract_postgres_data
-from workflow.tasks import extract_mongo_data
-from workflow.tasks import load_to_clickhouse_bronze
-from workflow.tasks import process_to_silver_layer
-from workflow.tasks import generate_reports
+from tasks import create_clickhouse_schema
+from tasks import extract_postgres_data
+from tasks import extract_mongo_data
+from tasks import load_to_clickhouse_bronze
+from tasks import process_to_silver_layer
+from tasks import generate_reports
 
 # Default arguments for the DAG
 default_args = {

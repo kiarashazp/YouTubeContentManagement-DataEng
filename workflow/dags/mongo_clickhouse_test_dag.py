@@ -11,9 +11,9 @@ def read_from_mongo(**kwargs):
         # You can adjust the batch size in the Airflow UI without changing the code.
         batch_size = int(Variable.get("mongo_batch_size", default_var=1000))
         mongo_hook = MongoHook(conn_id='MONGO_CONN_ID')
-    	client = mongo_hook.get_conn()
-    	db = client['videos']
-    	collection = db['videos']
+        client = mongo_hook.get_conn()
+        db = client['videos']
+        collection = db['videos']
         cursor = collection.find().batch_size(batch_size)
         
         batches = []
@@ -30,8 +30,7 @@ def read_from_mongo(**kwargs):
         logger.error(f"Error extracting data from MongoDB: {error}")
         raise
 
-    
-    
+
 # Task to create schema in ClickHouse
 def create_clickhouse_schema():
     client = Client(host='clickhouse', user='airflow', password='airflow')
@@ -42,23 +41,23 @@ def create_clickhouse_schema():
     # Create a table in ClickHouse
     client.execute('''
     CREATE TABLE IF NOT EXISTS bronze.videos (
-    	id String,
-    	owner_username String,
-    	owner_id String,
-    	title String,
-    	tags Nullable(String),
-    	uid String,
-	visit_count Int64,
-	owner_name String,
-	duration Int32,
-	posted_timestamp Int32,
-	comments Nullable(String),
-	like_count Nullable(Int64),
-	is_deleted Bool,
-	created_at Int64,
-	expire_at Int64,
-	update_count Int32,
-       ) ENGINE = AggregatingMergeTree() ORDER BY name
+    id String,
+    owner_username String,
+    owner_id String,
+    title String,
+    tags Nullable(String),
+    uid String,
+    visit_count Int64,
+    owner_name String,
+    duration Int32,
+    posted_timestamp Int32,
+    comments Nullable(String),
+    like_count Nullable(Int64),
+    is_deleted Bool,
+    created_at Int64,
+    expire_at Int64,
+    update_count Int32,
+        ) ENGINE = AggregatingMergeTree() ORDER BY name
    ''')
     
     # Close the connection
@@ -79,13 +78,13 @@ def load_to_clickhouse(**kwargs):
             INSERT INTO bronze.videos (
                     id, owner_username, owner_id, title, tags, uid, visit_count, owner_name, duration,
                     posted_timestamp, comments, like_count, is_deleted, created_at, expire_at, update_count) VALUES 
-                    ''', 
-                    [(doc['id'], doc['owner_username'], doc['owner_id'], doc['title'], doc['tags'], doc['uid'],
-                    doc['visit_count'], doc['owner_name'], doc['duration'], doc['posted_timestamp'], doc['comments'],
-                    doc['like_count'], doc['is_deleted'], doc['created_at'], doc['expire_at'], doc['update_count'])
-                    for doc in batch]
-                    )
-
+                    ''',
+                       [(doc['id'], doc['owner_username'], doc['owner_id'], doc['title'], doc['tags'], doc['uid'],
+                         doc['visit_count'], doc['owner_name'], doc['duration'], doc['posted_timestamp'],
+                         doc['comments'],
+                         doc['like_count'], doc['is_deleted'], doc['created_at'], doc['expire_at'], doc['update_count'])
+                        for doc in batch]
+                       )
       
     # Query from ClickHouse to verify the insertion
     clickhouse_result = client.execute('SELECT count(*) FROM bronze.videos')
@@ -93,6 +92,7 @@ def load_to_clickhouse(**kwargs):
     
     # Close the connection
     client.disconnect()
+
 
 default_args = {
     'owner': 'airflow',
