@@ -5,7 +5,7 @@ CREATE USER airflow WITH PASSWORD 'airflow';
 
 GRANT ALL PRIVILEGES ON DATABASE airflow TO airflow;
 
-\connect airflow;
+\connect channels_data;
 CREATE TABLE IF NOT EXISTS channels (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
