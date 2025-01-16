@@ -3,6 +3,7 @@ from airflow.providers.mongo.hooks.mongo import MongoHook
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime
 from clickhouse_driver import Client
+from airflow.models import Variable
 
 import logging
 
@@ -63,7 +64,7 @@ def create_clickhouse_schema():
     created_at Int64,
     expire_at Int64,
     update_count Int32,
-        ) ENGINE = AggregatingMergeTree() ORDER BY name
+        ) ENGINE = MergeTree() ORDER BY name
    ''')
     
     # Close the connection
