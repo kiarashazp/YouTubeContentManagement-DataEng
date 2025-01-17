@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 def read_from_mongo(**kwargs):
     try:
         # You can adjust the batch size in the Airflow UI without changing the code
-        batch_size = int(Variable.get("mongo_batch_size", default_var=1000))
+        batch_size = int(Variable.get("mongo_batch_size", default_var=10))
         mongo_hook = MongoHook(conn_id='MONGO_CONN_ID')
         client = mongo_hook.get_conn()
         db = client['videos']
@@ -25,26 +25,18 @@ def read_from_mongo(**kwargs):
         batches = []
         batch_number = 0
         while cursor.alive:
-            logger.info(f"in while")
             batch = []
             for i in range(batch_size):
-                logger.info(f"in for by counting {i}")
                 try:
-                    logger.info(f"in try by counting {i}")
                     doc = cursor.next()
-                    logger.info(f"after cursor.next() by counting {i}")
                     batch.append(doc)
-                    logger.info(f"after append to batch try by counting {i}")
                 except StopIteration:
-                    logger.info(f"in break by counting {i}")
                     break
             if batch:
-                logger.info(f"in if batch")
                 batches.append(batch)
                 logger.info(f"Batch {batch_number} retrieved from MongoDB: {batch}")
                 batch_number += 1
 
-        logger.info(f"before xcom")
         kwargs['ti'].xcom_push(key='mongo_batches', value=batches)
         logger.info(f"Total batches pushed to XCom: {len(batches)}")
 
