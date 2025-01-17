@@ -22,7 +22,6 @@ def read_from_mongo(**kwargs):
         collection = db['videos']
         cursor = collection.find().batch_size(batch_size)
 
-        batches = []
         batch_number = 0
         while cursor.alive:
             batch = []
@@ -33,12 +32,13 @@ def read_from_mongo(**kwargs):
                 except StopIteration:
                     break
             if batch:
-                batches.append(batch)
+                kwargs['ti'].xcom_push(key='mongo_batches', value=batch)
                 logger.info(f"Batch {batch_number} retrieved from MongoDB: {batch}")
                 batch_number += 1
 
-        kwargs['ti'].xcom_push(key='mongo_batches', value=batches)
-        logger.info(f"Total batches pushed to XCom: {len(batches)}")
+        # kwargs['ti'].xcom_push(key='mongo_batches', value=batches)
+        # logger.info(f"Total batches pushed to XCom: {len(batches)}")
+        logger.info(f"Total batches pushed to XCom: {batch_number}"
 
     except Exception as error:
         logger.error(f"Error extracting data from MongoDB: {error}")
