@@ -28,6 +28,7 @@ def read_from_mongo(**kwargs):
             for i in range(batch_size):
                 try:
                     doc = cursor.next()
+                    doc['_id'] = str(doc['_id'])
                     batch.append(doc)
                 except StopIteration:
                     break
