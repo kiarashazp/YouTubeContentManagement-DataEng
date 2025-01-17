@@ -38,7 +38,7 @@ def read_from_mongo(**kwargs):
 
         # kwargs['ti'].xcom_push(key='mongo_batches', value=batches)
         # logger.info(f"Total batches pushed to XCom: {len(batches)}")
-        logger.info(f"Total batches pushed to XCom: {batch_number}"
+        logger.info(f"Total batches pushed to XCom: {batch_number}")
 
     except Exception as error:
         logger.error(f"Error extracting data from MongoDB: {error}")
