@@ -10,6 +10,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 # Task to read from MongoDB
 def read_from_mongo(**kwargs):
     try:
@@ -22,22 +23,38 @@ def read_from_mongo(**kwargs):
         cursor = collection.find().batch_size(batch_size)
 
         batches = []
+        batch_number = 0
         while cursor.alive:
+            logger.info(f"in while")
             batch = []
-            for _ in range(batch_size):
+            for i in range(batch_size):
+                logger.info(f"in for by counting {i}")
                 try:
+                    logger.info(f"in try by counting {i}")
                     doc = cursor.next()
+                    logger.info(f"after cursor.next() by counting {i}")
                     batch.append(doc)
+                    logger.info(f"after append to batch try by counting {i}")
                 except StopIteration:
+                    logger.info(f"in break by counting {i}")
                     break
             if batch:
+                logger.info(f"in if batch")
                 batches.append(batch)
+                logger.info(f"Batch {batch_number} retrieved from MongoDB: {batch}")
+                batch_number += 1
 
+        logger.info(f"before xcom")
         kwargs['ti'].xcom_push(key='mongo_batches', value=batches)
+        logger.info(f"Total batches pushed to XCom: {len(batches)}")
 
     except Exception as error:
         logger.error(f"Error extracting data from MongoDB: {error}")
         raise
+
+    finally:
+        client.close()
+
 
 default_args = {
     'owner': 'airflow',
