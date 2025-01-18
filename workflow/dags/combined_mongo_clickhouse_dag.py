@@ -10,6 +10,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 # Task to create schema in ClickHouse
 def create_clickhouse_schema():
     client = Client(host='clickhouse', user='airflow', password='airflow')
@@ -41,6 +42,7 @@ def create_clickhouse_schema():
     
     logger.info("ClickHouse schema created successfully.")
     client.disconnect()
+
 
 # Combined task to read from MongoDB and load into ClickHouse
 def read_and_load(**kwargs):
@@ -87,6 +89,7 @@ def read_and_load(**kwargs):
     
     client.close()
     clickhouse_client.disconnect()
+
 
 # Define default_args
 default_args = {
