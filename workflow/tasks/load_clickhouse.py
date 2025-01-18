@@ -4,20 +4,21 @@ from airflow.models import Variable
 
 def load_clickhouse_batch(**context):
 
-    query_file_path = Variable.get("load_clickhouse_query_path")
+    # query_file_path = Variable.get("load_clickhouse_query_path")
+    query_file_path = "utils/load_clickhouse.sql"
     query = load_query_from_file(query_file_path)
 
-    clickhouse_host = Variable.get("CLICKHOUSE_HOST")
-    clickhouse_user = Variable.get("CLICKHOUSE_USER")
-    clickhouse_pass = Variable.get("CLICKHOUSE_PASS")
-    clickhouse_db = Variable.get("CLICKHOUSE_DB")
+    # clickhouse_host = Variable.get("CLICKHOUSE_HOST")
+    # clickhouse_user = Variable.get("CLICKHOUSE_USER")
+    # clickhouse_pass = Variable.get("CLICKHOUSE_PASS")
+    # clickhouse_db = Variable.get("CLICKHOUSE_DB")
 
     client = Client(
-        host=clickhouse_host,
+        host='clickhouse',
         port=9000,
-        user=clickhouse_user,
-        password=clickhouse_pass,
-        database=clickhouse_db
+        user='airflow',
+        password='airflow',
+        database='channels'
     )
 
     batch_data = context['ti'].xcom_pull(key='batch_data')
