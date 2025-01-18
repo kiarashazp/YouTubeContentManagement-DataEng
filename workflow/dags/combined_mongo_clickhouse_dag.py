@@ -30,7 +30,6 @@ def create_clickhouse_schema():
         visit_count Int64,
         owner_name String,
         duration Int32,
-        posted_timestamp DATE,
         comments Nullable(String),
         like_count Nullable(Int64),
         is_deleted Bool,
@@ -80,7 +79,6 @@ def read_and_load(**kwargs):
                                         doc['object']['tags'],
                                         doc['object']['uid'], doc['object']['visit_count'], doc['object']['owner_name'],
                                         doc['object']['duration'],
-                                        doc['object']['posted_timestamp'],
                                         doc['object']['comments'], doc['object']['like_count'], doc['object']['is_deleted'],
                                         doc['created_at'],
                                         doc['expire_at'], doc['update_count'])
