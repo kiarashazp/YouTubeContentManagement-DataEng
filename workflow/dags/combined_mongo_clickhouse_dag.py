@@ -18,7 +18,7 @@ def create_clickhouse_schema():
 
     client.execute('''
     CREATE TABLE IF NOT EXISTS bronze.videos (
-        id String,
+        id String UNIQUE,
         owner_username String,
         owner_id String,
         title String,
@@ -85,29 +85,31 @@ def read_and_load(**kwargs):
             logger.info(f"Batch {batch_number} retrieved from MongoDB: {batch}")
 
             # Insert documents into ClickHouse
-            clickhouse_client.execute(
-                'INSERT INTO bronze.videos VALUES',
-                [(
-                    doc['id'],
-                    doc['owner_username'],
-                    doc['owner_id'],
-                    doc['title'],
-                    doc['tags'],
-                    doc['uid'],
-                    doc['visit_count'],
-                    doc['owner_name'],
-                    doc['duration'],
-                    doc['comments'],
-                    doc['like_count'],
-                    doc['is_deleted'],
-                    doc['created_at'],
-                    doc['expire_at'],
-                    doc['update_count']
-                ) for doc in batch]
-            )
-            logger.info(f"Batch {batch_number} inserted into ClickHouse.")
-            batch_number += 1
-
+            try:
+                clickhouse_client.execute(
+                    'INSERT INTO bronze.videos VALUES',
+                    [(
+                        doc['id'],
+                        doc['owner_username'],
+                        doc['owner_id'],
+                        doc['title'],
+                        doc['tags'],
+                        doc['uid'],
+                        doc['visit_count'],
+                        doc['owner_name'],
+                        doc['duration'],
+                        doc['comments'],
+                        doc['like_count'],
+                        doc['is_deleted'],
+                        doc['created_at'],
+                        doc['expire_at'],
+                        doc['update_count']
+                    ) for doc in batch]
+                )
+                logger.info(f"Batch {batch_number} inserted into ClickHouse.")
+                batch_number += 1
+            except Exception as ve:
+                logger.info(f"--------- error {ve}")
     clickhouse_count = clickhouse_client.execute('SELECT count(*) FROM bronze.videos')
     logger.info(f"Total records in ClickHouse: {clickhouse_count}")
 
