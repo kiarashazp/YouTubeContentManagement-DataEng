@@ -65,28 +65,29 @@ def read_and_load(**kwargs):
             except StopIteration:
                 break
         if batch:
-            logger.info(f"Batch {batch_number} retrieved from MongoDB: {batch}")
+            # logger.info(f"Batch {batch_number} retrieved from MongoDB: {batch}")
             
             # Insert documents into ClickHouse
-            clickhouse_client.execute('''
-                INSERT INTO bronze.videos (
-                    id, owner_username, owner_id, title, tags, uid, visit_count, owner_name, duration,
-                    comments, like_count, is_deleted, created_at, expire_at, update_count
-                ) VALUES
-                    ''',
-                                      [(doc.get('_id', ''), doc.get('owner_username', ''), doc.get('owner_id',''),
-                                        doc.get('title', ''), doc.get('tags', ''), doc.get('uid', ''),
-                                        doc.get('visit_count', 0), doc.get('owner_name', ''),
-                                        doc.get('duration', 0), doc.get('comments', ''), doc.get('like_count', 0),
-                                        doc.get('is_deleted', False), doc.get('created_at', 0), doc.get('expire_at', 0),
-                                        doc.get('update_count', 0))
-                                       for doc in batch]
-                                      )
-            logger.info(f"Batch {batch_number} inserted into ClickHouse.")
-            batch_number += 1
+            logger.info(f"{doc}")
+            # clickhouse_client.execute('''
+            #     INSERT INTO bronze.videos (
+            #         id, owner_username, owner_id, title, tags, uid, visit_count, owner_name, duration,
+            #         comments, like_count, is_deleted, created_at, expire_at, update_count
+            #     ) VALUES
+            #         ''',
+            #                           [(doc.get('_id', ''), doc.get('owner_username', ''), doc.get('owner_id',''),
+            #                             doc.get('title', ''), doc.get('tags', ''), doc.get('uid', ''),
+            #                             doc.get('visit_count', 0), doc.get('owner_name', ''),
+            #                             doc.get('duration', 0), doc.get('comments', ''), doc.get('like_count', 0),
+            #                             doc.get('is_deleted', False), doc.get('created_at', 0), doc.get('expire_at', 0),
+            #                             doc.get('update_count', 0))
+            #                            for doc in batch]
+            #                           )
+            # # logger.info(f"Batch {batch_number} inserted into ClickHouse.")
+            # batch_number += 1
     
-    clickhouse_count = clickhouse_client.execute('SELECT count(*) FROM bronze.videos')
-    logger.info(f"Total records in ClickHouse: {clickhouse_count}")
+    # clickhouse_count = clickhouse_client.execute('SELECT count(*) FROM bronze.videos')
+    # logger.info(f"Total records in ClickHouse: {clickhouse_count}")
     
     client.close()
     clickhouse_client.disconnect()
