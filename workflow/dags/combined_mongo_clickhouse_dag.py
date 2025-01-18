@@ -73,7 +73,7 @@ def read_and_load(**kwargs):
                     posted_timestamp, comments, like_count, is_deleted, created_at, expire_at, update_count
                 ) VALUES
                     ''', 
-                [(doc['id'], doc['owner_username'], doc['owner_id'], doc['title'], doc.get('tags'),
+                [(doc['_id'], doc['owner_username'], doc['owner_id'], doc['title'], doc.get('tags'),
                   doc['uid'], doc['visit_count'], doc['owner_name'], doc['duration'], doc['posted_timestamp'],
                   doc.get('comments'), doc.get('like_count'), doc['is_deleted'], doc['created_at'],
                   doc['expire_at'], doc['update_count']) 
