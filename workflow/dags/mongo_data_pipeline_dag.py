@@ -32,7 +32,8 @@ def read_from_mongo(**kwargs):
                 except StopIteration:
                     break
             if batch:
-                kwargs['ti'].xcom_push(key='mongo_batches', value=batch)
+                key = f'mongo_batches' 
+                kwargs['ti'].xcom_push(key=key, value=batch)
                 # logger.info(f"Batch {batch_number} retrieved from MongoDB: {batch}")
                 batch_number += 1
 
@@ -110,7 +111,7 @@ default_args = {
     'retries': 1,
 }
 
-with DAG('mongo_clickhouse_example_dag', default_args=default_args, schedule_interval='@daily', catchup=False) as dag:
+with DAG('mongo_data_pipeline_dag', default_args=default_args, schedule_interval='@daily', catchup=False) as dag:
     read_task = PythonOperator(
         task_id='read_from_mongo',
         python_callable=read_from_mongo,
