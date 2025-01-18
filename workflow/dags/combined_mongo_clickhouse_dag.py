@@ -68,7 +68,9 @@ def read_and_load(**kwargs):
             logger.info(f"Batch {batch_number} retrieved from MongoDB: {batch}")
             
             # Insert documents into ClickHouse
-            logger.info(f"{doc}")
+            logger.info(f"doc : {doc}")
+            logger.info(f"batch : {batch[0]}")
+
             clickhouse_client.execute('''
                 INSERT INTO bronze.videos (
                     id, owner_username, owner_id, title, tags, uid, visit_count, owner_name, duration,
