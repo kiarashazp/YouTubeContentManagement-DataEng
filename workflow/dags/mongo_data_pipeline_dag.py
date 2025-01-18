@@ -32,7 +32,7 @@ def read_from_mongo(**kwargs):
                 except StopIteration:
                     break
             if batch:
-                key = f'mongo_batches' 
+                key = f'mongo_batch_{batch_number}' 
                 kwargs['ti'].xcom_push(key=key, value=batch)
                 # logger.info(f"Batch {batch_number} retrieved from MongoDB: {batch}")
                 batch_number += 1
@@ -40,7 +40,7 @@ def read_from_mongo(**kwargs):
         logger.info(f"Total batches pushed to XCom: {batch_number}")
 
     except Exception as error:
-        logger.error(f"Error extracting data from MongoDB: {error}")
+        logger.error(f"Error extracting data from MongoDB, Batch {batch_number}, Error: {error}")
         raise
 
     finally:
@@ -81,12 +81,14 @@ def create_clickhouse_schema():
 # Task to load data into ClickHouse
 def load_to_clickhouse(**kwargs):
     client = Client(host='clickhouse', user='airflow', password='airflow')
-    mongo_batches = kwargs['ti'].xcom_pull(task_ids='read_from_mongo', key='mongo_batches')
-    if not mongo_batches:
-        raise ValueError("No data batches received from MongoDB extraction task.")
-    
-    # Insert documents into ClickHouse
-    for batch in mongo_batches:
+    batch_number = 0
+    while True:
+        key = f'mongo_batch_{batch_number}'
+        mongo_batch = kwargs['ti'].xcom_pull(task_ids='read_from_mongo', key=key)
+        if not mongo_batch:
+            break  # Exit the loop if no more batches are found
+        
+        # Insert documents into ClickHouse
         client.execute('''
             INSERT INTO bronze.videos (
                     id, owner_username, owner_id, title, tags, uid, visit_count, owner_name, duration,
@@ -97,14 +99,20 @@ def load_to_clickhouse(**kwargs):
               doc['uid'], doc['visit_count'], doc['owner_name'], doc['duration'], doc['posted_timestamp'],
               doc.get('comments'), doc.get('like_count'), doc['is_deleted'], doc['created_at'],
               doc['expire_at'], doc['update_count'])
-             for doc in batch]
+             for doc in mongo_batch]
         )
-      
+        
+        logger.info(f"Batch {batch_number} inserted into ClickHouse")
+        batch_number += 1
+
     clickhouse_result = client.execute('SELECT count(*) FROM bronze.videos')
     logger.info("ClickHouse Result: %s", clickhouse_result)
-    
+
     client.disconnect()
 
+
+
+# Define the default arguments for the DAG
 default_args = {
     'owner': 'airflow',
     'start_date': datetime(2023, 1, 1),
