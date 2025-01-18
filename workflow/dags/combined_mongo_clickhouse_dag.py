@@ -71,7 +71,7 @@ def read_and_load(**kwargs):
             clickhouse_client.execute('''
                 INSERT INTO bronze.videos (
                     id, owner_username, owner_id, title, tags, uid, visit_count, owner_name, duration,
-                    posted_timestamp, comments, like_count, is_deleted, created_at, expire_at, update_count
+                    comments, like_count, is_deleted, created_at, expire_at, update_count
                 ) VALUES
                     ''',
                                       [(doc['_id'], doc['object']['owner_username'], doc['object']['owner_id'],
