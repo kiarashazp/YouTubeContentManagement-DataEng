@@ -30,7 +30,7 @@ def create_clickhouse_schema():
         visit_count Int64,
         owner_name String,
         duration Int32,
-        posted_timestamp Int32,
+        posted_timestamp DATE,
         comments Nullable(String),
         like_count Nullable(Int64),
         is_deleted Bool,
