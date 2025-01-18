@@ -75,11 +75,13 @@ def read_and_load(**kwargs):
                     posted_timestamp, comments, like_count, is_deleted, created_at, expire_at, update_count
                 ) VALUES
                     ''',
-                                      [(doc['_id'], doc['owner_username'], doc['owner_id'], doc['title'],
-                                        doc.get('tags'),
-                                        doc['uid'], doc['visit_count'], doc['owner_name'], doc['duration'],
-                                        doc['posted_timestamp'],
-                                        doc.get('comments'), doc.get('like_count'), doc['is_deleted'],
+                                      [(doc['_id'], doc['object']['owner_username'], doc['object']['owner_id'],
+                                        doc['object']['title'],
+                                        doc['object']['tags'],
+                                        doc['object']['uid'], doc['object']['visit_count'], doc['object']['owner_name'],
+                                        doc['object']['duration'],
+                                        doc['object']['posted_timestamp'],
+                                        doc['object']['comments'], doc['object']['like_count'], doc['object']['is_deleted'],
                                         doc['created_at'],
                                         doc['expire_at'], doc['update_count'])
                                        for doc in batch]
