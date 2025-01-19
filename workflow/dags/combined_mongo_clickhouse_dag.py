@@ -18,7 +18,7 @@ def create_clickhouse_schema():
 
     client.execute('''
     CREATE TABLE IF NOT EXISTS bronze.videos (
-        id String,
+        id Int32,
         owner_username String,
         owner_id String,
         title String,
