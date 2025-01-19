@@ -92,6 +92,9 @@ def read_and_load(**kwargs):
             logger.info(f"trying to get id: {batch[0]['id']}, last id: {batch[-1]['id']}")
             
             for doc in batch:
+                if not doc['id']:
+                    logger.warning("id not found")
+
                 logger.info(f"""
                        id:  { doc['id']},
                        ou: { doc['owner_username']},
