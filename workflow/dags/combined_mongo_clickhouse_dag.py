@@ -122,11 +122,11 @@ def read_and_load(**kwargs):
 default_args = {
     'owner': 'airflow',
     'start_date': datetime(2023, 1, 1),
-    'retries': 2,
+    'retries': 1,
 }
 
 # Define the DAG
-with DAG('combined_mongo_clickhouse_dag', default_args=default_args, schedule_interval='@daily', catchup=False) as dag:
+with DAG('combined_mongo_clickhouse_dag', default_args=default_args, schedule_interval='@once', catchup=False) as dag:
     create_schema_task = PythonOperator(
         task_id='create_clickhouse_schema',
         python_callable=create_clickhouse_schema,
