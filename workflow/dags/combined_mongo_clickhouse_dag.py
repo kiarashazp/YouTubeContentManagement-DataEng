@@ -64,7 +64,7 @@ def read_and_load(**kwargs):
                     obj_data = doc.get('object')
                     # Create a processed document with the correct field access
                     processed_doc = {
-                        'id': obj_data.get('id'),  # Use MongoDB _id as the primary id
+                        'id': obj_data.get('id', 2025), # Use MongoDB _id as the primary id
                         'owner_username': obj_data.get('owner_username'),
                         'owner_id': obj_data.get('owner_id'),
                         'title': obj_data.get('title'),
