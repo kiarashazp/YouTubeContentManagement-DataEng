@@ -90,6 +90,27 @@ def read_and_load(**kwargs):
         if batch:
             logger.info(f"Batch {batch_number} retrieved from MongoDB: {batch}")
             logger.info(f"trying to get id: {batch[0]['id']}, last id: {batch[-1]['id']}")
+            
+            for doc in batch:
+                logger.info(f"""
+                        { doc['id']},
+                        { doc['owner_username']},
+                        { doc['owner_id']},
+                        { doc['title']},
+                        { doc['tags']},
+                        { doc['uid']},
+                        { doc['visit_count']},
+                        { doc['owner_name']},
+                        { doc['duration']},
+                        { doc['comments']},
+                        { doc['like_count']},
+                        { doc['is_deleted']},
+                        { doc['created_at']},
+                        { doc['expire_at']},
+                        { doc['update_count']}
+                        """)
+
+
 
             # Insert documents into ClickHouse
             try:
