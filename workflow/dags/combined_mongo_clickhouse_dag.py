@@ -18,11 +18,7 @@ def create_clickhouse_schema():
 
     client.execute('''
     CREATE TABLE IF NOT EXISTS bronze.videos (
-<<<<<<< HEAD
-        id Int64,
-=======
-        id String UNIQUE,
->>>>>>> parent of fe15791... primary key
+        id String,
         owner_username String,
         owner_id String,
         title String,
@@ -37,7 +33,7 @@ def create_clickhouse_schema():
         created_at Int64,
         expire_at Int64,
         update_count Int32
-    ) ENGINE = MergeTree() ORDER BY id
+    ) ENGINE = MergeTree() PRIMARY KEY (id) ORDER BY id
     ''')
 
     logger.info("ClickHouse schema created successfully.")
@@ -55,48 +51,38 @@ def read_and_load(**kwargs):
     cursor = collection.find().batch_size(batch_size)
 
     batch_number = 0
-    processed_ids = set() # Set to track processed document IDs
-
-
     while cursor.alive:
         batch = []
         for _ in range(batch_size):
             try:
                 doc = cursor.next()
-                if str(doc['_id']) not in processed_ids:
-                    # Extract the object data
-                    obj_data = doc.get('object')
-                    if obj_data is not None:
-                        # Create a processed document with the correct field access
-                        processed_doc = {
-                            'id': int(obj_data.get('id')),  # Use MongoDB _id as the primary id
-                            'owner_username': obj_data.get('owner_username'),
-                            'owner_id': obj_data.get('owner_id'),
-                            'title': obj_data.get('title'),
-                            'tags': obj_data.get('tags'),
-                            'uid': obj_data.get('uid'),
-                            'visit_count': obj_data.get('visit_count'),
-                            'owner_name': obj_data.get('owner_name'),
-                            'duration': obj_data.get('duration'),
-                            'comments': obj_data.get('comments'),
-                            'like_count': obj_data.get('like_count'),
-                            'is_deleted': obj_data.get('is_deleted'),
-                            'created_at': obj_data.get('created_at'),
-                            'expire_at': obj_data.get('expire_at'),
-                            'update_count': obj_data.get('update_count')
-                        }
-                        batch.append(processed_doc)
-                    else: 
-                        logger.warning(f"Document id {doc['_id']} has no 'object' field, skipping.")    
-                    processed_ids.add(str(doc['_id']))
-                else:
-                    logger.warning(f"Duplicate document id {doc['_id']} found, skipping.")
+                # Extract the object data
+                obj_data = doc.get('object', {})
+
+                # Create a processed document with the correct field access
+                processed_doc = {
+                    'id': str(doc['_id']),  # Use MongoDB _id as the primary id
+                    'owner_username': obj_data.get('owner_username', ''),
+                    'owner_id': obj_data.get('owner_id', ''),
+                    'title': obj_data.get('title', ''),
+                    'tags': obj_data.get('tags', ''),
+                    'uid': obj_data.get('uid', ''),
+                    'visit_count': obj_data.get('visit_count', 0),
+                    'owner_name': obj_data.get('owner_name', ''),
+                    'duration': obj_data.get('duration', 0),
+                    'comments': obj_data.get('comments', ''),
+                    'like_count': obj_data.get('like_count', 0),
+                    'is_deleted': obj_data.get('is_deleted', False),
+                    'created_at': obj_data.get('created_at', 0),
+                    'expire_at': obj_data.get('expire_at', 0),
+                    'update_count': obj_data.get('update_count', 0)
+                }
+                batch.append(processed_doc)
             except StopIteration:
                 break
 
         if batch:
             logger.info(f"Batch {batch_number} retrieved from MongoDB: {batch}")
-            logger.info(f"trying to get id: {batch[0]['id']}, last id: {batch[-1]['id']}")
 
             # Insert documents into ClickHouse
             try:
@@ -118,14 +104,12 @@ def read_and_load(**kwargs):
                         doc['created_at'],
                         doc['expire_at'],
                         doc['update_count']
-                    ) for doc in batch],
-                    types_check=True
+                    ) for doc in batch]
                 )
                 logger.info(f"Batch {batch_number} inserted into ClickHouse.")
                 batch_number += 1
             except Exception as ve:
-                logger.error(f"Error inserting batch {batch_number} into ClickHouse: {ve}")
-    
+                logger.info(f"--------- error {ve}")
     clickhouse_count = clickhouse_client.execute('SELECT count(*) FROM bronze.videos')
     logger.info(f"Total records in ClickHouse: {clickhouse_count}")
 
@@ -137,11 +121,11 @@ def read_and_load(**kwargs):
 default_args = {
     'owner': 'airflow',
     'start_date': datetime(2023, 1, 1),
-    'retries': 1,
+    'retries': 2,
 }
 
 # Define the DAG
-with DAG('combined_mongo_clickhouse_dag', default_args=default_args, schedule_interval='@once', catchup=False) as dag:
+with DAG('combined_mongo_clickhouse_dag', default_args=default_args, schedule_interval='@daily', catchup=False) as dag:
     create_schema_task = PythonOperator(
         task_id='create_clickhouse_schema',
         python_callable=create_clickhouse_schema,
