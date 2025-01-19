@@ -64,7 +64,7 @@ def read_and_load(**kwargs):
                     obj_data = doc.get('object')
                     # Create a processed document with the correct field access
                     processed_doc = {
-                        'id': str(obj_data.get('id')),  # Use MongoDB _id as the primary id
+                        'id': int(obj_data.get('id')),  # Use MongoDB _id as the primary id
                         'owner_username': obj_data.get('owner_username'),
                         'owner_id': obj_data.get('owner_id'),
                         'title': obj_data.get('title'),
@@ -95,7 +95,7 @@ def read_and_load(**kwargs):
                 clickhouse_client.execute(
                     'INSERT INTO bronze.videos VALUES',
                     [(
-                        int(doc['id']),
+                        doc['id'],
                         doc['owner_username'],
                         doc['owner_id'],
                         doc['title'],
