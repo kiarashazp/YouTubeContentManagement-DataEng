@@ -18,7 +18,11 @@ def create_clickhouse_schema():
 
     client.execute('''
     CREATE TABLE IF NOT EXISTS bronze.videos (
+<<<<<<< HEAD
         id Int64,
+=======
+        id String UNIQUE,
+>>>>>>> parent of fe15791... primary key
         owner_username String,
         owner_id String,
         title String,
@@ -33,7 +37,7 @@ def create_clickhouse_schema():
         created_at Int64,
         expire_at Int64,
         update_count Int32
-    ) ENGINE = MergeTree() PRIMARY KEY (id) ORDER BY id
+    ) ENGINE = MergeTree() ORDER BY id
     ''')
 
     logger.info("ClickHouse schema created successfully.")
