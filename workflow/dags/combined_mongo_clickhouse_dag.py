@@ -18,7 +18,7 @@ def create_clickhouse_schema():
 
     client.execute('''
     CREATE TABLE IF NOT EXISTS bronze.videos (
-        id Int32,
+        id Int64,
         owner_username String,
         owner_id String,
         title String,
@@ -64,7 +64,7 @@ def read_and_load(**kwargs):
                     obj_data = doc.get('object')
                     # Create a processed document with the correct field access
                     processed_doc = {
-                        'id': obj_data.get('id', 2025), # Use MongoDB _id as the primary id
+                        'id': str(obj_data.get('id')),  # Use MongoDB _id as the primary id
                         'owner_username': obj_data.get('owner_username'),
                         'owner_id': obj_data.get('owner_id'),
                         'title': obj_data.get('title'),
@@ -95,7 +95,7 @@ def read_and_load(**kwargs):
                 clickhouse_client.execute(
                     'INSERT INTO bronze.videos VALUES',
                     [(
-                        doc['id'],
+                        int(doc['id']),
                         doc['owner_username'],
                         doc['owner_id'],
                         doc['title'],
@@ -110,7 +110,8 @@ def read_and_load(**kwargs):
                         doc['created_at'],
                         doc['expire_at'],
                         doc['update_count']
-                    ) for doc in batch]
+                    ) for doc in batch],
+                    types_check=True
                 )
                 logger.info(f"Batch {batch_number} inserted into ClickHouse.")
                 batch_number += 1
