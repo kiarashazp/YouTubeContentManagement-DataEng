@@ -93,21 +93,22 @@ def read_and_load(**kwargs):
             
             for doc in batch:
                 logger.info(f"""
-                        { doc['id']},
-                        { doc['owner_username']},
-                        { doc['owner_id']},
-                        { doc['title']},
-                        { doc['tags']},
-                        { doc['uid']},
-                        { doc['visit_count']},
-                        { doc['owner_name']},
-                        { doc['duration']},
-                        { doc['comments']},
-                        { doc['like_count']},
-                        { doc['is_deleted']},
-                        { doc['created_at']},
-                        { doc['expire_at']},
-                        { doc['update_count']}
+                       id:  { doc['id']},
+                       ou: { doc['owner_username']},
+                       o_i: { doc['owner_id']},
+                       title:   { doc['title']},
+                        tags: { doc['tags']},
+                        uid: { doc['uid']},
+                        vc: { doc['visit_count']},
+                        on: { doc['owner_name']},
+                        d:{ doc['duration']},
+                        cs:{ doc['comments']},
+                        lc:{ doc['like_count']},
+                        id?:{ doc['is_deleted']},
+                        ca:{ doc['created_at']},
+                        ea:{ doc['expire_at']},
+                        uc: { doc['update_count']}
+
                         """)
 
 
