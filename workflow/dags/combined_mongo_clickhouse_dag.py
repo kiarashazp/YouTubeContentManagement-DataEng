@@ -66,25 +66,28 @@ def read_and_load(**kwargs):
                 if str(doc['_id']) not in processed_ids:
                     # Extract the object data
                     obj_data = doc.get('object')
-                    # Create a processed document with the correct field access
-                    processed_doc = {
-                        'id': int(obj_data.get('id')),  # Use MongoDB _id as the primary id
-                        'owner_username': obj_data.get('owner_username'),
-                        'owner_id': obj_data.get('owner_id'),
-                        'title': obj_data.get('title'),
-                        'tags': obj_data.get('tags'),
-                        'uid': obj_data.get('uid'),
-                        'visit_count': obj_data.get('visit_count'),
-                        'owner_name': obj_data.get('owner_name'),
-                        'duration': obj_data.get('duration'),
-                        'comments': obj_data.get('comments'),
-                        'like_count': obj_data.get('like_count'),
-                        'is_deleted': obj_data.get('is_deleted'),
-                        'created_at': obj_data.get('created_at'),
-                        'expire_at': doc.get('expire_at'),
-                        'update_count': doc.get('update_count')
-                    }
-                    batch.append(processed_doc)
+                    if obj_data is not None:
+                        # Create a processed document with the correct field access
+                        processed_doc = {
+                            'id': int(obj_data.get('id')),  # Use MongoDB _id as the primary id
+                            'owner_username': obj_data.get('owner_username'),
+                            'owner_id': obj_data.get('owner_id'),
+                            'title': obj_data.get('title'),
+                            'tags': obj_data.get('tags'),
+                            'uid': obj_data.get('uid'),
+                            'visit_count': obj_data.get('visit_count'),
+                            'owner_name': obj_data.get('owner_name'),
+                            'duration': obj_data.get('duration'),
+                            'comments': obj_data.get('comments'),
+                            'like_count': obj_data.get('like_count'),
+                            'is_deleted': obj_data.get('is_deleted'),
+                            'created_at': obj_data.get('created_at'),
+                            'expire_at': obj_data.get('expire_at'),
+                            'update_count': obj_data.get('update_count')
+                        }
+                        batch.append(processed_doc)
+                    else: 
+                        logger.warning(f"Document id {doc['_id']} has no 'object' field, skipping.")    
                     processed_ids.add(str(doc['_id']))
                 else:
                     logger.warning(f"Duplicate document id {doc['_id']} found, skipping.")
@@ -94,31 +97,6 @@ def read_and_load(**kwargs):
         if batch:
             logger.info(f"Batch {batch_number} retrieved from MongoDB: {batch}")
             logger.info(f"trying to get id: {batch[0]['id']}, last id: {batch[-1]['id']}")
-            
-            for doc in batch:
-                if not doc['id']:
-                    logger.warning("id not found")
-
-                logger.info(f"""
-                       id:  { doc['id']},
-                       ou: { doc['owner_username']},
-                       o_i: { doc['owner_id']},
-                       title:   { doc['title']},
-                        tags: { doc['tags']},
-                        uid: { doc['uid']},
-                        vc: { doc['visit_count']},
-                        on: { doc['owner_name']},
-                        d:{ doc['duration']},
-                        cs:{ doc['comments']},
-                        lc:{ doc['like_count']},
-                        id?:{ doc['is_deleted']},
-                        ca:{ doc['created_at']},
-                        ea:{ doc['expire_at']},
-                        uc: { doc['update_count']}
-
-                        """)
-
-
 
             # Insert documents into ClickHouse
             try:
