@@ -51,6 +51,7 @@ def read_and_load(**kwargs):
     cursor = collection.find().batch_size(batch_size)
 
     batch_number = 0
+    processed_ids = set()
     while cursor.alive:
         batch = []
         for _ in range(batch_size):
@@ -60,30 +61,30 @@ def read_and_load(**kwargs):
                 obj_data = doc.get('object', {})
 
                 # Create a processed document with the correct field access
-                processed_doc = {
-                    'id': str(doc['_id']),  # Use MongoDB _id as the primary id
-                    'owner_username': obj_data.get('owner_username', ''),
-                    'owner_id': obj_data.get('owner_id', ''),
-                    'title': obj_data.get('title', ''),
-                    'tags': obj_data.get('tags', ''),
-                    'uid': obj_data.get('uid', ''),
-                    'visit_count': obj_data.get('visit_count', 0),
-                    'owner_name': obj_data.get('owner_name', ''),
-                    'duration': obj_data.get('duration', 0),
-                    'comments': obj_data.get('comments', ''),
-                    'like_count': obj_data.get('like_count', 0),
-                    'is_deleted': obj_data.get('is_deleted', False),
-                    'created_at': obj_data.get('created_at', 0),
-                    'expire_at': obj_data.get('expire_at', 0),
-                    'update_count': obj_data.get('update_count', 0)
-                }
-                batch.append(processed_doc)
+                if str(doc['_id']) not in processed_ids:
+                    processed_doc = {
+                        'id': str(doc['_id']),  # Use MongoDB _id as the primary id
+                        'owner_username': obj_data.get('owner_username', ''),
+                        'owner_id': obj_data.get('owner_id', ''),
+                        'title': obj_data.get('title', ''),
+                        'tags': obj_data.get('tags', ''),
+                        'uid': obj_data.get('uid', ''),
+                        'visit_count': obj_data.get('visit_count', 0),
+                        'owner_name': obj_data.get('owner_name', ''),
+                        'duration': obj_data.get('duration', 0),
+                        'comments': obj_data.get('comments', ''),
+                        'like_count': obj_data.get('like_count', 0),
+                        'is_deleted': obj_data.get('is_deleted', False),
+                        'created_at': obj_data.get('created_at', 0),
+                        'expire_at': obj_data.get('expire_at', 0),
+                        'update_count': obj_data.get('update_count', 0)
+                    }
+                    batch.append(processed_doc)
+                    processed_ids.add(str(doc['_id']))
             except StopIteration:
                 break
 
         if batch:
-            logger.info(f"Batch {batch_number} retrieved from MongoDB: {batch}")
-
             # Insert documents into ClickHouse
             try:
                 clickhouse_client.execute(
