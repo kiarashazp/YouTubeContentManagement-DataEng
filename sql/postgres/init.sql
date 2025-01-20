@@ -9,12 +9,12 @@ GRANT ALL PRIVILEGES ON DATABASE airflow TO airflow;
 CREATE TABLE IF NOT EXISTS channels (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
-    total_video_visit BIGINT CHECK (total_video_visit >= 0),
-    video_count INT CHECK (video_count >= 0),
-    start_date_timestamp BIGINT CHECK (start_date_timestamp >= 0),
-    followers_count BIGINT CHECK (followers_count >= 0),
+    total_video_visit BIGINT CHECK (total_video_visit >= 0) DEFAULT 0,
+    video_count INT CHECK (video_count >= 0) DEFAULT 0,
+    start_date_timestamp BIGINT,
+    followers_count BIGINT CHECK (followers_count >= 0) DEFAULT 0,
     country TEXT,
-    created_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW(),
     update_count INT
 );
 
