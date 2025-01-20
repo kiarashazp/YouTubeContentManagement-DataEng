@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS channels;
+-- DROP TABLE IF EXISTS channels;
 
 CREATE TABLE IF NOT EXISTS channels (
     id UInt64,
