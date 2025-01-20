@@ -55,8 +55,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1"
-          memory: "2G"
+          cpus: "2"
+          memory: "4G"
 
   redis:
     image: redis:7.2-bookworm
