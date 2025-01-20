@@ -18,7 +18,7 @@ def load_clickhouse_batch(**context):
         port=9000,
         user='airflow',
         password='airflow',
-        database='channels'
+        database='bronze'
     )
 
     batch_data = context['ti'].xcom_pull(key='batch_data')
