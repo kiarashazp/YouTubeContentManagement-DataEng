@@ -31,7 +31,7 @@ def transfer_data_in_batches(**context):
         port=9000,
         user='airflow',
         password='airflow',
-        database='channels'
+        database='bronze'
     )
     
     client.execute(query)
