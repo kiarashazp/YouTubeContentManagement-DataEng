@@ -1,5 +1,4 @@
 ----- 1. Channel Growth Over Time
-
 -- create table
 CREATE TABLE IF NOT EXISTS gold.channel_growth
 (
@@ -32,7 +31,6 @@ ORDER BY channel_growth.date;
 
 
 ---- 2. Top Performing Channels
-
 -- create table
 CREATE TABLE IF NOT EXISTS gold.top_channels
 (
@@ -77,36 +75,45 @@ LIMIT 10;
 
 ---- 3. Video Engagement Metrics
 -- create table
-CREATE TABLE IF NOT EXISTS bronze.video_engagement
+CREATE TABLE IF NOT EXISTS gold.video_engagement
 (
     video_id String,
     date Date,
     visit_count AggregateFunction(sum, Int64),
     like_count AggregateFunction(sum, Int64),
-    comment_count AggregateFunction(count, UInt32),
     engagement_rate AggregateFunction(avg, Float64)
 )
 ENGINE = AggregatingMergeTree()
 PARTITION BY toYYYYMM(date)
 ORDER BY (video_id, date);
 
--- insert table
-INSERT INTO bronze.video_engagement
+-- Insert data into table
+INSERT INTO gold.video_engagement
 SELECT
     video_id,
     toDate(video_created_at) AS date,
-    sumState(video_visit_count) AS visit_count,
-    sumState(video_like_count) AS like_count,
-    countState(video_comments) AS comment_count,
-    avgState(if(video_visit_count > 0,
-        video_like_count / video_visit_count, 0)) AS engagement_rate
+    sumState(CAST(COALESCE(video_visit_count, 0) AS Int64)) AS visit_count,
+    sumState(CAST(COALESCE(video_like_count, 0) AS Int64)) AS like_count,
+    avgState(
+        if(CAST(COALESCE(video_visit_count, 0) AS Float64) > 0,
+           CAST(COALESCE(video_like_count, 0) AS Float64) / CAST(COALESCE(video_visit_count, 0) AS Float64),
+           0)
+    ) AS engagement_rate
 FROM silver.events
 GROUP BY video_id, toDate(video_created_at);
+
+-- selected from table
+SELECT video_id, date, sumMerge(visit_count) AS total_visit_count, sumMerge(like_count) AS total_like_count,
+       avgMerge(engagement_rate) AS average_engagement_rate
+FROM gold.video_engagement
+GROUP BY video_id, date
+ORDER BY date, video_id
+LIMIT 10;
 
 
 ---- 4. Content Popularity Analysis
 -- create table
-CREATE TABLE IF NOT EXISTS bronze.content_popularity
+CREATE TABLE IF NOT EXISTS gold.content_popularity
 (
     tag String,
     date Date,
@@ -119,21 +126,27 @@ PARTITION BY toYYYYMM(date)
 ORDER BY (tag, date);
 
 -- insert table
-INSERT INTO bronze.content_popularity
+INSERT INTO gold.content_popularity
 SELECT
-    arrayJoin(splitByChar(',', video_tags)) AS tag,
+    arrayJoin(splitByChar(',', assumeNotNull(video_tags))) AS tag,
     toDate(video_created_at) AS date,
     countState() AS video_count,
-    sumState(video_visit_count) AS total_visits,
-    avgState(video_like_count) AS avg_likes
+    sumState(CAST(COALESCE(video_visit_count, 0) AS Int64)) AS total_visits,
+    avgState(CAST(COALESCE(video_like_count, 0) AS Float64)) AS avg_likes
 FROM silver.events
 WHERE video_tags IS NOT NULL
 GROUP BY tag, toDate(video_created_at);
 
+-- selected table
+SELECT tag, date, countMerge(video_count) AS total_video_count, sumMerge(total_visits) AS total_visits,
+       avgMerge(avg_likes) AS average_likes
+FROM gold.content_popularity
+GROUP BY tag, date
+ORDER BY date, tag;
 
 ---- 5. Geographic Distribution
 -- create table
-CREATE TABLE IF NOT EXISTS bronze.geographic_distribution
+CREATE TABLE IF NOT EXISTS gold.geographic_distribution
 (
     country String,
     date Date,
@@ -146,36 +159,56 @@ PARTITION BY toYYYYMM(date)
 ORDER BY (country, date);
 
 -- insert table
-INSERT INTO bronze.geographic_distribution
+INSERT INTO gold.geographic_distribution
 SELECT
     channel_country AS country,
     toDate(channel_created_at) AS date,
     uniqState(channel_username) AS channel_count,
-    sumState(channel_followers_count) AS total_followers,
-    sumState(channel_total_video_visit) AS total_video_visits
+    sumState(ifNull(channel_followers_count, 0)) AS total_followers,
+    sumState(ifNull(channel_total_video_visit, 0)) AS total_video_visits
 FROM silver.events
 GROUP BY country, toDate(channel_created_at);
 
--- 6. Channel Activity Trends
-CREATE TABLE IF NOT EXISTS bronze.channel_activity
+-- selected table
+SELECT country, date,
+       uniqMerge(channel_count) AS channel_count,
+       sumMerge(total_followers) AS total_followers,
+       sumMerge(total_video_visits) AS total_video_visits
+FROM gold.geographic_distribution
+GROUP BY country, date
+ORDER BY channel_count DESC, country;
+
+---- 6. Channel Activity Trends
+-- create table
+CREATE TABLE IF NOT EXISTS gold.channel_activity_trends
 (
     channel_username String,
-    date Date,
-    update_frequency AggregateFunction(sum, UInt32),
-    days_since_creation AggregateFunction(max, UInt32),
-    is_active AggregateFunction(max, UInt8)
+    created_date Date,
+    start_date Date,
+    update_count AggregateFunction(sum, UInt32),
+    activity_duration AggregateFunction(max, UInt64),
+    average_updates_per_day AggregateFunction(avg, Float64)
 )
 ENGINE = AggregatingMergeTree()
-PARTITION BY toYYYYMM(date)
-ORDER BY (channel_username, date);
+PARTITION BY toYYYYMM(created_date)
+ORDER BY (channel_username, created_date);
 
 -- insert table
-INSERT INTO bronze.channel_activity
+INSERT INTO gold.channel_activity_trends
 SELECT
     channel_username,
-    toDate(channel_created_at) AS date,
-    sumState(channel_update_count) AS update_frequency,
-    maxState(dateDiff('day', toDate(channel_created_at), today())) AS days_since_creation,
-    maxState(if(channel_update_count > 0, 1, 0)) AS is_active
+    toDate(channel_created_at) AS created_date,
+    toDate(channel_start_date_timestamp) AS start_date,
+    sumState(assumeNotNull(channel_update_count)) AS update_count,
+    maxState(toUInt64(dateDiff('day', toDate(channel_start_date_timestamp), today()))) AS activity_duration,
+    avgState(assumeNotNull(channel_update_count) / greatest(toUInt64(dateDiff('day', toDate(channel_start_date_timestamp), today())), 1)) AS average_updates_per_day
 FROM silver.events
-GROUP BY channel_username, toDate(channel_created_at);
+GROUP BY channel_username, toDate(channel_created_at), toDate(channel_start_date_timestamp);
+
+-- selected table
+SELECT  channel_username, created_date,
+        sumMerge(update_count) AS total_updates,
+        maxMerge(activity_duration) AS max_activity_duration,
+        avgMerge(average_updates_per_day) AS avg_updates_per_day
+FROM gold.channel_activity_trends
+GROUP BY channel_username, created_date
