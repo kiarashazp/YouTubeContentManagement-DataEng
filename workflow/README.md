@@ -1,3 +1,77 @@
+# PostgreSQL to ClickHouse Batch Load
+
+## Overview
+
+This project contains an Apache Airflow DAG for batch loading data from PostgreSQL to ClickHouse. 
+The DAG is designed to transfer data in batches to ensure efficient and timely data migration.
+
+## Requirements
+
+- Docker and Docker Compose
+
+## DAG and Task Details 
+
+### DAG: postgres_to_clickhouse_batch_load 
+- **Description**: Batch load data from PostgreSQL to ClickHouse 
+- **Schedule Interval**: None (manual trigger) 
+- **Start Date**: `days_ago(1)` 
+- **Catchup**: False 
+
+
+### Default Arguments 
+- `owner`: `'airflow'` 
+- `depends_on_past`: `False` 
+- `email_on_failure`: `False` 
+- `email_on_retry`: `False`
+
+
+### Tasks
+
+1. **Task: transfer_data_in_batches**
+   - **Task ID**: `transfer_data_in_batches`
+   - **Python Callable**: `transfer_data_in_batches`
+   - **Provide Context**: `True`
+
+2. **Task: load_clickhouse_batch**
+   - **Task ID**: `load_clickhouse_batch`
+   - **Python Callable**: `load_clickhouse_batch`
+   - **Provide Context**: `True`
+
+3. **Task: extract_postgres_batch**
+   - **Task ID**: `extract_postgres_batch`
+   - **Python Callable**: `extract_postgres_batch`
+   - **Provide Context**: `True`
+
+
+## Task Details
+
+### transfer_data_in_batches
+The `transfer_data_in_batches` task is responsible for managing the batch transfer process from PostgreSQL to ClickHouse.
+
+- **Batch Size**: Configurable through the `BATCH_SIZE_POSTGRES` variable (default: 1000).
+- **Extract Data**: Uses the `PostgresHook` to extract data from PostgreSQL in batches.
+- **Load Data**: Executes ClickHouse schema initialization and loading batch data using `load_clickhouse_batch`.
+
+### load_clickhouse_batch
+The `load_clickhouse_batch` task is responsible for loading batch data into ClickHouse from a PostgreSQL source.
+
+- **Uses** the `clickhouse_driver.Client` to interact with ClickHouse.
+- **Loads** the SQL query from the specified file (`load_clickhouse_query_path`).
+- **Database credentials**:
+    - Host: `clickhouse`
+    - Port: 9000
+    - User: `airflow`
+    - Password: `airflow`
+    - Database: `bronze`
+- **Processes** the batch data and executes the query on ClickHouse.
+
+### extract_postgres_batch
+The `extract_postgres_batch` task is responsible for extracting batch data from PostgreSQL.
+
+- **Uses** the `PostgresHook` to connect and query PostgreSQL.
+- **Extracts** data in batches based on the specified batch size and offset.
+
+
 # MongoDB to ClickHouse Airflow DAG
 
 ## Overview
@@ -23,14 +97,12 @@ This repository contains an Apache Airflow DAG that transfers data from MongoDB 
 - **Owner**: `airflow`
 - **Start Date**: `2023-01-01`
 - **Retries**: `1`
-
-### Schedule Interval
-
-The DAG is scheduled to run once (`@once`).
+- **Schedule Interval**: `@once`.
 
 ### Variables
 
 - `mongo_batch_size`: Specifies the batch size for reading data from MongoDB. Defaults to `1000`.
+
 
 ## Usage
 
