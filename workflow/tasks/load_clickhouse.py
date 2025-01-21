@@ -2,6 +2,7 @@ from clickhouse_driver import Client
 from utils.load_sql_query import load_query_from_file
 from airflow.models import Variable
 
+
 def load_clickhouse_batch(**context):
 
     # query_file_path = Variable.get("load_clickhouse_query_path")
