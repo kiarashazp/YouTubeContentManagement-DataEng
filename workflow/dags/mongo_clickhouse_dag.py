@@ -126,7 +126,7 @@ default_args = {
 }
 
 # Define the DAG
-with DAG('combined_mongo_clickhouse_dag', default_args=default_args, schedule_interval='@once', catchup=False) as dag:
+with DAG('mongo_clickhouse_dag', default_args=default_args, schedule_interval='@once', catchup=False) as dag:
     create_schema_task = PythonOperator(
         task_id='create_clickhouse_schema',
         python_callable=create_clickhouse_schema,
