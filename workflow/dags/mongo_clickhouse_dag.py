@@ -36,7 +36,7 @@ def create_clickhouse_schema():
     ) ENGINE = MergeTree() PRIMARY KEY (id) ORDER BY id
     ''')
 
-    logger.info("ClickHouse schema created successfully.")
+    # logger.info("ClickHouse schema created successfully.")
     client.disconnect()
 
 
@@ -107,12 +107,14 @@ def read_and_load(**kwargs):
                         doc['update_count']
                     ) for doc in batch]
                 )
-                logger.info(f"Batch {batch_number} inserted into ClickHouse.")
+                # logger.info(f"Batch {batch_number} inserted into ClickHouse.")
                 batch_number += 1
             except Exception as ve:
-                logger.info(f"--------- error {ve}")
-    clickhouse_count = clickhouse_client.execute('SELECT count(*) FROM bronze.videos')
-    logger.info(f"Total records in ClickHouse: {clickhouse_count}")
+                pass
+                # logger.info(f"--------- error {ve}")
+    
+    # clickhouse_count = clickhouse_client.execute('SELECT count(*) FROM bronze.videos')
+    # logger.info(f"Total records in ClickHouse: {clickhouse_count}")
 
     client.close()
     clickhouse_client.disconnect()
