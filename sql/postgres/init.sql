@@ -1,9 +1,12 @@
 CREATE DATABASE airflow;
+CREATE DATABASE metabaseappdb;
 CREATE DATABASE channels_data;
 
 CREATE USER airflow WITH PASSWORD 'airflow';
+CREATE USER metabase WITH PASSWORD 'metabase';
 
 GRANT ALL PRIVILEGES ON DATABASE airflow TO airflow;
+GRANT ALL PRIVILEGES ON DATABASE metabase TO metabase;
 
 \connect channels_data;
 CREATE TABLE IF NOT EXISTS channels (
