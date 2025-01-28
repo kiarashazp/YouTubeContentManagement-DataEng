@@ -5,15 +5,12 @@ import asyncio
 # Set up logging
 logger = logging.getLogger(__name__)
 
-# Fetch Telegram credentials from Airflow Variables
-# TELEGRAM_BOT_TOKEN = Variable.get("telegram_bot_token")
-# TELEGRAM_CHAT_ID = Variable.get("telegram_chat_id")
-
-TELEGRAM_BOT_TOKEN = "7200432955:AAELxQ0cp_NvypQmwh3WFiarGp_GW19knZE" 
+# Initialize Bot and Telegram channel
+TELEGRAM_BOT_TOKEN = "7200432955:AAELxQ0cp_NvypQmwh3WFiarGp_GW19knZE"
 TELEGRAM_CHAT_ID = "-1002362833220" 
 
-# Initialize Bot
 bot = Bot(token=TELEGRAM_BOT_TOKEN)
+
 
 async def send_telegram_alert(message: str):
     """
@@ -28,7 +25,8 @@ async def send_telegram_alert(message: str):
     except Exception as e:
         logger.error(f"Failed to send Telegram alert: {e}")
 
-# Functions to send alerts on task success, failure, and retry
+
+# Function to send alerts on task failure
 def notify_on_failure(context):
     """
     Sends a Telegram alert when a task fails.
@@ -49,6 +47,8 @@ def notify_on_failure(context):
 
     asyncio.run(send_telegram_alert(message))
 
+
+# Function to send alerts on task success
 def notify_on_success(context):
     """
     Sends a Telegram alert when a task succeeds.
@@ -67,6 +67,8 @@ def notify_on_success(context):
 
     asyncio.run(send_telegram_alert(message))
 
+
+# Function to send alerts on task retry
 def notify_on_retry(context):
     """
     Sends a Telegram alert when a task is retried.
@@ -86,9 +88,3 @@ def notify_on_retry(context):
     )
 
     asyncio.run(send_telegram_alert(message))
-
-# Test the Telegram alert
-if __name__ == "__main__":
-    message = "🚨 This is a test alert. 🚨"
-    asyncio.run(send_telegram_alert(message))
-    logger.info("Telegram alert sent successfully.")
