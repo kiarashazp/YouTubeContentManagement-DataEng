@@ -37,8 +37,6 @@ def transform_json_file(input_datas):
                     "duration": input_data["object"]["duration"],
                     "posted_date": str(input_data["object"]["posted_date"]),
                     "posted_timestamp": datetime.fromtimestamp(int(input_data["object"]["posted_timestamp"])).isoformat(),
-                    "sdate_rss": str(input_data["object"]["sdate_rss"]),
-                    "sdate_rss_tp": datetime.fromtimestamp(int(input_data["object"]["sdate_rss_tp"])).isoformat(),
                     "comments": str(input_data["object"]["comments"]) if input_data["object"]["comments"] is not None else None,
                     "like_count": input_data["object"]["like_count"] if input_data["object"]["like_count"] is not None else None,
                     "description": str(input_data["object"]["description"]) if input_data["object"]["description"] is not None else None,
