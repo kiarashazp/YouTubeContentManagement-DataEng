@@ -1,5 +1,6 @@
 from utils.load_sql_query import load_query_from_file
 
+
 def load_mongo_data(**kwargs):
     try:
         # Load the INSERT query from a file
@@ -12,7 +13,7 @@ def load_mongo_data(**kwargs):
 
         # Get transformed data
         ti = kwargs['ti']
-    	transformed_data = ti.xcom_pull(task_ids='transform_mongo_data')
+        transformed_data = ti.xcom_pull(task_ids='transform_mongo_data')
 
         if not transformed_data:
             logger.info("No data to load into ClickHouse.")

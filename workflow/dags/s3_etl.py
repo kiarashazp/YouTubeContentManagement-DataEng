@@ -68,4 +68,3 @@ load_mongo_task = PythonOperator(
 
 # Define task dependencies
 extract_mongo_task >> transform_mongo_task >> load_mongo_task
-
