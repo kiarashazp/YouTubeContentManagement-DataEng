@@ -13,8 +13,8 @@ def transform_mongo_data(mongo_data list[dict], **kwargs) -> list[dict]:
     """
     try:
         # Extract data from MongoDB
-        ti = kwargs['ti']
-    	mongo_data = ti.xcom_pull(task_ids='extract_mongo_data')  
+        # ti = kwargs['ti']
+    	# mongo_data = ti.xcom_pull(task_ids='extract_mongo_data')  
         logger.info(f"Transforming {len(mongo_data)} documents")
 
         # Initialize a list to store transformed data

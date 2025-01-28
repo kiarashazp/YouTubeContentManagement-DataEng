@@ -11,8 +11,8 @@ def load_mongo_data(transformed_data list[dict], **kwargs) -> list[dict]:
             return
 
         # Get transformed data
-        ti = kwargs['ti']
-    	transformed_data = ti.xcom_pull(task_ids='transform_mongo_data')
+        # ti = kwargs['ti']
+    	# transformed_data = ti.xcom_pull(task_ids='transform_mongo_data')
 
         if not transformed_data:
             logger.info("No data to load into ClickHouse.")
