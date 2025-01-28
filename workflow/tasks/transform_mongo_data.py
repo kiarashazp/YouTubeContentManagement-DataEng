@@ -1,7 +1,7 @@
 from tasks.extract_mongo_data import extract_mongo_data
 
 
-def transform_mongo_data(**kwargs):
+def transform_mongo_data(mongo_data list[dict], **kwargs) -> list[dict]:
     """
     Transforms MongoDB data into a structured format for insertion into ClickHouse.
 

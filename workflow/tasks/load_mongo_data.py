@@ -1,6 +1,6 @@
 from utils.load_sql_query import load_query_from_file
 
-def load_mongo_data(**kwargs):
+def load_mongo_data(transformed_data list[dict], **kwargs) -> list[dict]:
     try:
         # Load the INSERT query from a file
         query_file_path = "utils/insert_videos_query.sql"
