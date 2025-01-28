@@ -55,6 +55,7 @@ extract_mongo_task = PythonOperator(
 transform_mongo_task = PythonOperator(
     task_id='transform_data',
     python_callable=transform_mongo_data,
+    op_args=[extract_mongo_task.output],
     provide_context=True,
     dag=dag,
 )
@@ -62,6 +63,7 @@ transform_mongo_task = PythonOperator(
 load_mongo_task = PythonOperator(
     task_id='load_data',
     python_callable=load_mongo_data,
+    op_args=[transform_mongo_task.output],
     provide_context=True,
     dag=dag,
 )
