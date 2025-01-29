@@ -3,6 +3,6 @@ SELECT
     start_date_timestamp, followers_count, country, 
     created_at, update_count 
 FROM channels
-WHERE created_at BETWEEN %s AND %s
+WHERE created_at::DATE BETWEEN %s AND %s
 ORDER BY id
 LIMIT %s OFFSET %s;
