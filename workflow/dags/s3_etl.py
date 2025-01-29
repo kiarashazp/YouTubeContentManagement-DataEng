@@ -67,7 +67,12 @@ transform_json_data_from_s3 = PythonOperator(
 load_json_to_mongo_task = PythonOperator(
     task_id='load_json_data',
     python_callable=load_to_mongodb,
+<<<<<<< HEAD
     # op_args=[transform_json_data.output],
+=======
+    op_args=[transform_json_data.output],
+    op_kwargs={'db_name': 'videos', 'collection_name': 'videos'},
+>>>>>>> 660d938e1544ebded52c2835e5a7d826bbf7811c
     provide_context=True,
     dag=dag
 )

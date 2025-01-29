@@ -1,6 +1,7 @@
 import json
 import logging
-from workflow.utils import connect_to_s3
+
+from utils import connect_to_s3
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
