@@ -68,7 +68,7 @@ load_json_to_mongo_task = PythonOperator(
     task_id='load_json_data',
     python_callable=load_to_mongodb,
     op_args=[transform_json_data.output],
-    op_kwargs={'db_name': 'videos', 'collection_name': 'videos'}
+    op_kwargs={'db_name': 'videos', 'collection_name': 'videos'},
     provide_context=True,
     dag=dag
 )
