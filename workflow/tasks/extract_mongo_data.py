@@ -18,7 +18,7 @@ def extract_mongo_data(**kwargs):
     """
     try:
         logical_date = kwargs.get('logical_date')        # Get the logical date (execution date) for the current run
-        logical_date = kwargs['logical_date']
+        # logical_date = kwargs['logical_date']
         start_date = logical_date  # Start of the interval
         end_date = logical_date + timedelta(days=1)  # End of the interval
 
