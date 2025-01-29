@@ -50,108 +50,44 @@ default_args = {
     catchup=True,  # Enable backfilling
     start_date=pendulum.now().subtract(days=5)
 )
-def s3_etl_dag():
+def s3_etl():
     @task()
-    def etl_s3_to_mongo(**kwargs):
-        json_data_list = extract_json_data(**kwargs)
-        transformed_json_data = transform_json_data(json_data_list)
-        load_to_mongodb(transformed_json_data)
+    def extract_json_data_from_s3(**kwargs) -> str:
+        return extract_json_data(**kwargs)
+
+    @task()
+    def transform_json_data_task(file_path: str, **kwargs) -> str:
+        return transform_json_data(file_path, **kwargs)
+
+    @task()
+    def load_json_to_mongo_task(file_path: str, **kwargs) -> None:
+        return load_to_mongodb(file_path, **kwargs)
 
     # @task()
-    # def extract_json_data_from_s3(**kwargs) -> list[dict]:
-    #     return extract_json_data(**kwargs)
-    #
+    # def extract_mongo_task(**kwargs) -> list[dict]:
+    #     return extract_mongo_data(**kwargs)
+
     # @task()
-    # def transform_json_data_task(json_data_list: list[dict], **kwargs) -> list[dict]:
-    #     return transform_json_data(json_data_list, **kwargs)
-    #
+    # def transform_mongo_task(mongo_data: list[dict], **kwargs) -> list[dict]:
+    #     return transform_mongo_data(mongo_data, **kwargs)
+
     # @task()
-    # def load_json_to_mongo_task(transformed_json_data: list[dict], **kwargs) -> None:
-    #     return load_to_mongodb(transformed_json_data, **kwargs)
-
-    @task()
-    def extract_mongo_task(**kwargs) -> list[dict]:
-        return extract_mongo_data(**kwargs)
-
-    @task()
-    def transform_mongo_task(mongo_data: list[dict], **kwargs) -> list[dict]:
-        return transform_mongo_data(mongo_data, **kwargs)
-
-    @task()
-    def load_mongo_task(transformed_mongo_data: list[dict], **kwargs) -> None:
-        return load_mongo_data(transformed_mongo_data, **kwargs)
+    # def load_mongo_task(transformed_mongo_data: list[dict], **kwargs) -> None:
+    #     return load_mongo_data(transformed_mongo_data, **kwargs)
 
     # Define task dependencies
-    etl_s3_to_mongo()
-    # json_data_list = extract_json_data_from_s3()
-    # transformed_json_data = transform_json_data_task(json_data_list)
-    # load_json_to_mongo_task(transformed_json_data)
+    file_path = extract_json_data_from_s3()
+    transformed_file_path = transform_json_data_task(file_path)
+    load_json_to_mongo_task(transformed_file_path)
 
     # mongo_data = extract_mongo_task()
     # transformed_mongo_data = transform_mongo_task(mongo_data)
     # load_mongo_task(transformed_mongo_data)
 
+    # Ensure the tasks run sequentially
+    # load_json_to_mongo_task >> extract_mongo_task
+    # extract_mongo_task >> transform_mongo_task
+    # transform_mongo_task >> load_mongo_task
 
 # Instantiate the DAG
-dag = s3_etl_dag()
-
-# # --------------------- Define tasks
-# # ------- ETL json from s3
-# extract_json_data_from_s3 = PythonOperator(
-#     task_id='extract_json_data',
-#     python_callable=extract_json_data,
-#     provide_context=True,
-#     dag=dag
-# )
-
-# transform_json_data_from_s3 = PythonOperator(
-#     task_id='transform_json_data',
-#     python_callable=transform_json_data,
-#     # op_args=[extract_json_data.output],
-#     provide_context=True,
-#     dag=dag
-# )
-
-# load_json_to_mongo_task = PythonOperator(
-#     task_id='load_json_data',
-#     python_callable=load_to_mongodb,
-#     # op_args=[transform_json_data.output],
-#     provide_context=True,
-#     dag=dag
-# )
-
-# # ------- ETL mongo to clickhouse
-# extract_mongo_task = PythonOperator(
-#     task_id='extract_data',
-#     python_callable=extract_mongo_data,
-#     provide_context=True,
-#     dag=dag,
-# )
-
-# transform_mongo_task = PythonOperator(
-#     task_id='transform_data',
-#     python_callable=transform_mongo_data,
-#     # op_args=[extract_mongo_task.output],
-#     provide_context=True,
-#     dag=dag,
-# )
-
-# load_mongo_task = PythonOperator(
-#     task_id='load_data',
-#     python_callable=load_mongo_data,
-#     # op_args=[transform_mongo_task.output],
-#     provide_context=True,
-#     dag=dag,
-# )
-
-# Define task dependencies
-# extract_json_data_from_s3 >> transform_json_data_from_s3 >> load_json_to_mongo_task
-# extract_mongo_task >> transform_mongo_task >> load_mongo_task
-
-# json_data_list = extract_json_data()
-# transformed_json_data = transform_json_data(json_data_list)
-# load_to_mongodb(transformed_json_data)
-
-# mongo_data = extract_mongo_data()
-# transformed_mongo_data = transform_mongo_data(mongo_data)
-# load_mongo_data(transformed_mongo_data)
+dag = s3_etl()
