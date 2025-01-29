@@ -59,7 +59,7 @@ extract_json_data_from_s3 = PythonOperator(
 transform_json_data_from_s3 = PythonOperator(
     task_id='transform_json_data',
     python_callable=transform_json_data,
-    op_args=[extract_json_data.output],
+    # op_args=[extract_json_data.output],
     provide_context=True,
     dag=dag
 )
@@ -67,7 +67,7 @@ transform_json_data_from_s3 = PythonOperator(
 load_json_to_mongo_task = PythonOperator(
     task_id='load_json_data',
     python_callable=load_to_mongodb,
-    op_args=[transform_json_data.output],
+    # op_args=[transform_json_data.output],
     provide_context=True,
     dag=dag
 )
@@ -83,7 +83,7 @@ extract_mongo_task = PythonOperator(
 transform_mongo_task = PythonOperator(
     task_id='transform_data',
     python_callable=transform_mongo_data,
-    op_args=[extract_mongo_task.output],
+    # op_args=[extract_mongo_task.output],
     provide_context=True,
     dag=dag,
 )
@@ -91,11 +91,19 @@ transform_mongo_task = PythonOperator(
 load_mongo_task = PythonOperator(
     task_id='load_data',
     python_callable=load_mongo_data,
-    op_args=[transform_mongo_task.output],
+    # op_args=[transform_mongo_task.output],
     provide_context=True,
     dag=dag,
 )
 
 # Define task dependencies
-extract_json_data_from_s3 >> transform_json_data_from_s3 >> load_json_to_mongo_task
-extract_mongo_task >> transform_mongo_task >> load_mongo_task
+# extract_json_data_from_s3 >> transform_json_data_from_s3 >> load_json_to_mongo_task
+# extract_mongo_task >> transform_mongo_task >> load_mongo_task
+
+json_data_list = extract_json_data()
+transformed_json_data = transform_json_data(json_data_list)
+load_to_mongodb(transformed_json_data)
+
+mongo_data = extract_mongo_data()
+transformed_mongo_data = transform_mongo_data(mongo_data)
+load_mongo_data(transformed_mongo_data)
