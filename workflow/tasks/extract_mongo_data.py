@@ -38,13 +38,13 @@ def extract_mongo_data(**kwargs):
         collection = db[collection_name]
 
         # Query MongoDB for data within the date range
-        mongo_query = {
-            "created_at": {
-                "$gte": start_date,
-                "$lt": end_date,
-            }
-        }
-
+        # mongo_query = {
+        #     "created_at": {
+        #         "$gte": start_date,
+        #         "$lt": end_date,
+        #     }
+        # }
+        mongo_query = {}
         logger.info(f"Executing MongoDB query: {mongo_query}")
         mongo_data = list(collection.find(mongo_query))
 
