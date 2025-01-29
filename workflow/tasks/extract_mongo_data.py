@@ -44,8 +44,8 @@ def extract_mongo_data(**kwargs):
         # Query MongoDB for data within the date range
         mongo_query = {
             "created_at": {
-                "$gte": start_date.isoformat(),
-                "$lt": end_date.isoformat(),
+                "$gte": start_date,
+                "$lt": end_date,
             }
         }
 
