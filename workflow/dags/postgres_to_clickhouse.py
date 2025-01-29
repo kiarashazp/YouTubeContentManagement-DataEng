@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
-from tasks.transfer_batches import transfer_data_in_batches
+from workflow.tasks.pg_to_clickhouse import transfer_data_in_batches
 
 default_args = {
     'owner': 'airflow',
