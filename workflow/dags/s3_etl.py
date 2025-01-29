@@ -80,9 +80,9 @@ def s3_etl_dag():
     transformed_json_data = transform_json_data_task(json_data_list)
     load_json_to_mongo_task(transformed_json_data)
 
-    mongo_data = extract_mongo_task()
-    transformed_mongo_data = transform_mongo_task(mongo_data)
-    load_mongo_task(transformed_mongo_data)
+    # mongo_data = extract_mongo_task()
+    # transformed_mongo_data = transform_mongo_task(mongo_data)
+    # load_mongo_task(transformed_mongo_data)
 
 
 # Instantiate the DAG
