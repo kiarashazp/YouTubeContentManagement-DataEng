@@ -52,16 +52,22 @@ default_args = {
 )
 def s3_etl_dag():
     @task()
-    def extract_json_data_from_s3(**kwargs) -> list[dict]:
-        return extract_json_data(**kwargs)
+    def etl_s3_to_mongo(**kwargs):
+        json_data_list = extract_json_data(**kwargs)
+        transformed_json_data = transform_json_data(json_data_list)
+        load_to_mongodb(transformed_json_data)
 
-    @task()
-    def transform_json_data_task(json_data_list: list[dict], **kwargs) -> list[dict]:
-        return transform_json_data(json_data_list, **kwargs)
-
-    @task()
-    def load_json_to_mongo_task(transformed_json_data: list[dict], **kwargs) -> None:
-        return load_to_mongodb(transformed_json_data, **kwargs)
+    # @task()
+    # def extract_json_data_from_s3(**kwargs) -> list[dict]:
+    #     return extract_json_data(**kwargs)
+    #
+    # @task()
+    # def transform_json_data_task(json_data_list: list[dict], **kwargs) -> list[dict]:
+    #     return transform_json_data(json_data_list, **kwargs)
+    #
+    # @task()
+    # def load_json_to_mongo_task(transformed_json_data: list[dict], **kwargs) -> None:
+    #     return load_to_mongodb(transformed_json_data, **kwargs)
 
     @task()
     def extract_mongo_task(**kwargs) -> list[dict]:
@@ -76,9 +82,10 @@ def s3_etl_dag():
         return load_mongo_data(transformed_mongo_data, **kwargs)
 
     # Define task dependencies
-    json_data_list = extract_json_data_from_s3()
-    transformed_json_data = transform_json_data_task(json_data_list)
-    load_json_to_mongo_task(transformed_json_data)
+    etl_s3_to_mongo()
+    # json_data_list = extract_json_data_from_s3()
+    # transformed_json_data = transform_json_data_task(json_data_list)
+    # load_json_to_mongo_task(transformed_json_data)
 
     # mongo_data = extract_mongo_task()
     # transformed_mongo_data = transform_mongo_task(mongo_data)

@@ -47,6 +47,7 @@ def extract_json_data(**kwargs) -> list[dict]:
                     try:
                         json_data = json.loads(line)
                         json_data_list.append(json_data)
+                        logger.info(f"load json files")
                     except json.JSONDecodeError as jde:
                         logger.error(f"Error decoding JSON content in file {file['Key']}: {jde}")
 
