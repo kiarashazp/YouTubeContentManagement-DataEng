@@ -1,9 +1,6 @@
 from airflow import DAG
-from airflow.providers.mongo.hooks.mongo import MongoHook
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
-from clickhouse_driver import Client
-from airflow.models import Variable
 import os
 import logging
 
@@ -30,7 +27,7 @@ DAG_ID = os.path.basename(__file__).replace(".py", "")
 default_args = {
     'owner': 'airflow',
     'start_date': start_date,  # Start date = 5 days ago
-    'retries': 1,
+    'retries': 2,
     'retry_delay': timedelta(minutes=5),
     'on_failure_callback': notify_on_failure,
     'on_success_callback': notify_on_success,
@@ -74,28 +71,28 @@ load_json_to_mongo_task = PythonOperator(
 )
 
 # ------- ETL mongo to clickhouse
-extract_mongo_task = PythonOperator(
-    task_id='extract_data',
-    python_callable=extract_mongo_data,
-    provide_context=True,
-    dag=dag,
-)
-
-transform_mongo_task = PythonOperator(
-    task_id='transform_data',
-    python_callable=transform_mongo_data,
-    # op_args=[extract_mongo_task.output],
-    provide_context=True,
-    dag=dag,
-)
-
-load_mongo_task = PythonOperator(
-    task_id='load_data',
-    python_callable=load_mongo_data,
-    # op_args=[transform_mongo_task.output],
-    provide_context=True,
-    dag=dag,
-)
+# extract_mongo_task = PythonOperator(
+#     task_id='extract_data',
+#     python_callable=extract_mongo_data,
+#     provide_context=True,
+#     dag=dag,
+# )
+#
+# transform_mongo_task = PythonOperator(
+#     task_id='transform_data',
+#     python_callable=transform_mongo_data,
+#     # op_args=[extract_mongo_task.output],
+#     provide_context=True,
+#     dag=dag,
+# )
+#
+# load_mongo_task = PythonOperator(
+#     task_id='load_data',
+#     python_callable=load_mongo_data,
+#     # op_args=[transform_mongo_task.output],
+#     provide_context=True,
+#     dag=dag,
+# )
 
 # Define task dependencies
 # extract_json_data_from_s3 >> transform_json_data_from_s3 >> load_json_to_mongo_task
@@ -105,6 +102,6 @@ json_data_list = extract_json_data()
 transformed_json_data = transform_json_data(json_data_list)
 load_to_mongodb(transformed_json_data)
 
-mongo_data = extract_mongo_data()
-transformed_mongo_data = transform_mongo_data(mongo_data)
-load_mongo_data(transformed_mongo_data)
+# mongo_data = extract_mongo_data()
+# transformed_mongo_data = transform_mongo_data(mongo_data)
+# load_mongo_data(transformed_mongo_data)

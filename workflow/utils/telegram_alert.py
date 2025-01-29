@@ -1,6 +1,8 @@
 from telegram import Bot
 import logging
 import asyncio
+from clickhouse_driver import Client
+from airflow.models import Variable
 
 # Set up logging
 logger = logging.getLogger(__name__)
