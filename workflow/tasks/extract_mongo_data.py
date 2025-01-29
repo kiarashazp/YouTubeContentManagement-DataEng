@@ -2,7 +2,6 @@ import logging
 from datetime import timedelta, datetime
 from airflow.models.dagrun import DagRun
 from airflow.providers.mongo.hooks.mongo import MongoHook
-import airflow.utils.dates
 
 
 logging.basicConfig(level=logging.INFO)

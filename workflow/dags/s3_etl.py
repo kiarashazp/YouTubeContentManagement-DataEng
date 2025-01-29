@@ -1,9 +1,6 @@
 from airflow import DAG
-from airflow.providers.mongo.hooks.mongo import MongoHook
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
-from clickhouse_driver import Client
-from airflow.models import Variable
 import os
 import logging
 
@@ -30,7 +27,7 @@ DAG_ID = os.path.basename(__file__).replace(".py", "")
 default_args = {
     'owner': 'airflow',
     'start_date': start_date,  # Start date = 5 days ago
-    'retries': 1,
+    'retries': 2,
     'retry_delay': timedelta(minutes=5),
     'on_failure_callback': notify_on_failure,
     'on_success_callback': notify_on_success,
