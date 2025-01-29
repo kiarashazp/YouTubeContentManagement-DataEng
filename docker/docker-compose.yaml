@@ -23,6 +23,8 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-../workflow}/plugins:/opt/airflow/plugins
     - ${AIRFLOW_PROJ_DIR:-../workflow}/tasks:/opt/airflow/tasks
     - ${AIRFLOW_PROJ_DIR:-../workflow}/utils:/opt/airflow/utils
+    - /root/YouTubeContentManagement-DataEng/data/s3/:/data/s3
+
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
