@@ -39,7 +39,7 @@ def extract_json_data(**kwargs) -> list[dict]:
 
             try:
                 # Read the file content
-                obj = s3_resource.get_object(bucket_name, file['Key'])
+                obj = s3_resource.get_object(Bucket=bucket_name, Key=file['Key'])
                 content = obj.get()['Body'].read().decode('utf-8')
 
                 # Parse JSON content line by line
