@@ -24,6 +24,7 @@ def load_to_mongodb(transformed_data: list[dict], **kwargs) -> None:
     collection = db[collection_name]
 
     try:
+        logger.info(f"Len Transformed Data {len(transformed_data)}")
         collection.insert_many(transformed_data)
         logger.info(f"Successfully inserted {len(transformed_data)} documents into MongoDB")
     except Exception as ve:
