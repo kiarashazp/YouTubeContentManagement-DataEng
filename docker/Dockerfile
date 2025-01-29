@@ -1,4 +1,5 @@
 FROM apache/airflow:2.10.4
+WORKDIR /root/YouTubeContentManagement-DataEng
 
 USER root
 
@@ -16,6 +17,5 @@ RUN sudo pip install apache-airflow-providers-mongo==3.0.0 pymongo==3.11.4 click
 
 RUN sudo pip3 install boto3~=1.36.6
 RUN sudo pip3 install python-telegram-bot==21.10
-RUN sudo pip3 install pymongo~=4.10.1
 
 USER airflow
