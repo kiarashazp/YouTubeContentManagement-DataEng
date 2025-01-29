@@ -1,5 +1,5 @@
 import logging
-from datetime import timedelta
+from datetime import timedelta, datetime
 from airflow.models.dagrun import DagRun
 from airflow.providers.mongo.hooks.mongo import MongoHook
 
@@ -22,7 +22,10 @@ def extract_mongo_data(**kwargs):
         logical_date = DagRun.execution_date  # Get the logical date (execution date) for the current run
         # logical_date = kwargs['logical_date']
         start_date = logical_date  # Start of the interval
+        start_date = datetime.fromisoformat(start_date)
+
         end_date = logical_date + timedelta(days=1)  # End of the interval
+        end_date = datetime.fromisoformat(end_date)
 
         logger.info(f"Extracting data for date range: {start_date} to {end_date}")
 
