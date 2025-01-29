@@ -7,7 +7,9 @@ from airflow.models import Variable
 import os
 import logging
 
-from tasks.etl_s3_mongo import extract_json_from_s3, transform_json_file, load_to_mongo_db
+from tasks.extract_json_data import extract_json_data
+from tasks.transform_json_data import transform_json_data
+from tasks.load_to_mongodb import load_to_mongodb
 from tasks.extract_mongo_data import extract_mongo_data
 from tasks.transform_mongo_data import transform_mongo_data
 from tasks.load_mongo_data import load_mongo_data
@@ -49,23 +51,23 @@ dag = DAG(
 # ------- ETL json from s3
 extract_json_data_from_s3 = PythonOperator(
     task_id='extract_json_data',
-    python_callable=extract_json_from_s3,
+    python_callable=extract_json_data,
     provide_context=True,
     dag=dag
 )
 
 transform_json_data_from_s3 = PythonOperator(
     task_id='transform_json_data',
-    python_callable=transform_json_file,
-    op_args=[extract_json_from_s3.output],
+    python_callable=transform_json_data,
+    op_args=[extract_json_data.output],
     provide_context=True,
     dag=dag
 )
 
 load_json_to_mongo_task = PythonOperator(
     task_id='load_json_data',
-    python_callable=load_to_mongo_db,
-    op_args=[transform_json_file.output],
+    python_callable=load_to_mongodb,
+    op_args=[transform_json_data.output],
     provide_context=True,
     dag=dag
 )
@@ -95,4 +97,5 @@ load_mongo_task = PythonOperator(
 )
 
 # Define task dependencies
+extract_json_data_from_s3 >> transform_json_data_from_s3 >> load_json_to_mongo_task
 extract_mongo_task >> transform_mongo_task >> load_mongo_task

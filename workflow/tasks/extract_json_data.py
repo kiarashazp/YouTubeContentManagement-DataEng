@@ -6,6 +6,7 @@ from workflow.utils import connect_to_s3
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def extract_json_data(**kwargs) -> list[dict]:
     """
     Extracts JSON data from files in an S3 bucket.

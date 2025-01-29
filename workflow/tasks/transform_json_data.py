@@ -5,6 +5,7 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def transform_json_data(json_data_list: list[dict], **kwargs) -> list[dict]:
     """
     Transforms a list of JSON data into a structured format.
