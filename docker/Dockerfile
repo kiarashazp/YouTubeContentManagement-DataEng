@@ -14,4 +14,6 @@ RUN sudo pip install --upgrade pip setuptools wheel
 # Install the required packages
 RUN sudo pip install apache-airflow-providers-mongo==3.0.0 pymongo==3.11.4 clickhouse-driver
 
+RUN sudo pip3 install -r requirements.txt
+
 USER airflow
