@@ -1,3 +1,11 @@
+import logging
+from datetime import timedelta
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
 def extract_mongo_data(**kwargs):
     """
     Extracts data from MongoDB for a specific date range.
@@ -10,7 +18,7 @@ def extract_mongo_data(**kwargs):
     """
     try:
         # Get the logical date (execution date) for the current run
-        logical_date = kwargs['logical_date']
+        logical_date = kwargs['execution_date']
         start_date = logical_date  # Start of the interval
         end_date = logical_date + timedelta(days=1)  # End of the interval
 
