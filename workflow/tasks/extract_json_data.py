@@ -1,5 +1,6 @@
 import json
 import logging
+
 from workflow.utils import connect_to_s3
 
 # Set up logging
