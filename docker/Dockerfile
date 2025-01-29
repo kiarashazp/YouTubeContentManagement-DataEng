@@ -14,6 +14,8 @@ RUN sudo pip install --upgrade pip setuptools wheel
 # Install the required packages
 RUN sudo pip install apache-airflow-providers-mongo==3.0.0 pymongo==3.11.4 clickhouse-driver
 
-RUN sudo pip3 install -r /root/YouTubeContentManagement-DataEng/requirements.txt
+RUN sudo pip3 install boto3~=1.36.6
+RUN sudo pip3 install python-telegram-bot==21.10
+RUN sudo pip3 install pymongo~=4.10.1
 
 USER airflow
