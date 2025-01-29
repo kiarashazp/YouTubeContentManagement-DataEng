@@ -21,9 +21,8 @@ def extract_mongo_data(**kwargs):
     """
     try:
         logical_date = DagRun.execution_date  # Get the logical date (execution date) for the current run
-        logical_date = logical_date.ts
         start_date = logical_date   # Start of the interval
-        end_date = logical_date + timedelta(days=1)  # End of the interval
+        end_date = start_date + timedelta(days=1)  # End of the interval
         logger.info(f"Extracting data for date range: {start_date} to {end_date}")
 
         # Connect to MongoDB
