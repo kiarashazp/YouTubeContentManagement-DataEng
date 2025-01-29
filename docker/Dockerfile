@@ -1,5 +1,4 @@
 FROM apache/airflow:2.10.4
-WORKDIR /root/YouTubeContentManagement-DataEng
 
 USER root
 
