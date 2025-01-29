@@ -5,6 +5,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def load_to_mongodb(transformed_data: list[dict], **kwargs) -> None:
     """
     Loads transformed data into MongoDB.

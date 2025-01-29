@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 
 
-def transform_data(input_data):
+def transforming_data(input_data):
     # Transform the data according to the desired schema
     try:
         transformed_data = {
@@ -44,7 +44,7 @@ def process_file(path_input_file, path_output_file):
                 if line.strip():
                     try:
                         input_data = json.loads(line.strip())
-                        transformed_data = transform_data(input_data)
+                        transformed_data = transforming_data(input_data)
                         output_file.write(json.dumps(transformed_data, ensure_ascii=False) + '\n')
                     except json.JSONDecodeError as e:
                         print(f"Error decoding JSON: {e}")
