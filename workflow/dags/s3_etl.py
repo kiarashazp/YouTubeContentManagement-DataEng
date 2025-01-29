@@ -56,7 +56,7 @@ def s3_etl_dag():
         return extract_json_data(**kwargs)
 
     @task()
-    def transform_json_data(json_data_list: list[dict], **kwargs) -> list[dict]:
+    def transform_json_data_task(json_data_list: list[dict], **kwargs) -> list[dict]:
         return transform_json_data(json_data_list, **kwargs)
 
     @task()
@@ -77,7 +77,7 @@ def s3_etl_dag():
 
     # Define task dependencies
     json_data_list = extract_json_data_from_s3()
-    transformed_json_data = transform_json_data(json_data_list)
+    transformed_json_data = transform_json_data_task(json_data_list)
     load_json_to_mongo_task(transformed_json_data)
 
     mongo_data = extract_mongo_task()
