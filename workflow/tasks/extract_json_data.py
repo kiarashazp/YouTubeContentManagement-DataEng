@@ -1,5 +1,6 @@
 import json
 import logging
+import tempfile
 
 from utils import connect_to_s3
 
@@ -56,7 +57,13 @@ def extract_json_data(**kwargs) -> list[dict]:
                 continue  # Skip to the next file
 
         logger.info(f"Extracted {len(json_data_list)} JSON documents from S3")
-        return json_data_list
+        # Save the JSON data to a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.json') as tmp_file:
+            json.dump(json_data_list, tmp_file)
+            tmp_filename = tmp_file.name
+            logger.info(f"Data written to temporary file: {tmp_filename}")
+
+        return tmp_filename
 
     except Exception as e:
         logger.error(f"Failed to extract JSON data from S3: {e}")
