@@ -2,6 +2,9 @@ import json
 import logging
 import tempfile
 
+from datetime import timedelta, datetime
+from airflow.models.dagrun import DagRun
+
 from utils import connect_to_s3
 
 # Set up logging
@@ -23,6 +26,10 @@ def extract_json_data(**kwargs) -> list[dict]:
         Exception: If an error occurs during the extraction process.
     """
     try:
+        start_date = DagRun.execution_date  # Start of the interval
+        end_date = start_date + timedelta(days=1)  # End of the interval
+        logger.info(f"Extracting data for date range: {start_date} to {end_date}")
+
         # Connect to S3
         s3_resource, bucket_name, response = connect_to_s3.connected_to_s3()
         json_data_list = []
