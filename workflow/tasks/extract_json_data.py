@@ -100,7 +100,7 @@ def extract_from_s3_and_transform_data(**kwargs):
                 logger.info(f"load json files")
                 transformed_json = transforming_data(json_data)
                 logger.info(f"transformed data")
-                connect_to_mongo(transformed_json)
+                load_to_mongodb(transformed_json)
                 logger.info(f"insert in file ")
             except json.JSONDecodeError as jde:
                 logger.error(f"Error decoding JSON content in file {file['Key']}: {jde}")
