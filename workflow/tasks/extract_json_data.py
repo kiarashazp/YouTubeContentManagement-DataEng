@@ -76,3 +76,70 @@ def extract_json_data(**kwargs) -> list[dict]:
         logger.error(f"Failed to extract JSON data from S3: {e}")
         raise  # Re-raise the exception to ensure the task fails
 
+
+def extract_from_s3_and_transform_data(**kwargs):
+    s3_resource, bucket_name, response = connect_to_s3.connected_to_s3()
+
+    if 'Contents' not in response:
+        logger.warning("No files found in the S3 bucket.")
+        return []
+
+    with open("transformed_data.json", mode='w') as transformed_file:
+        logger.info(f"Transformed data written to temporary file: {transformed_file}")
+    # Process each file in the S3 bucket
+        for file in response['Contents']:
+            if not file['Key'].endswith(".json"):
+                continue
+
+            logger.info(f"Processing JSON file: {file['Key']}")
+            obj = s3_resource.get_object(Bucket=bucket_name, Key=file['Key'])
+            content = obj['Body'].read().decode('utf-8')
+
+            for line in content.splitlines():
+                try:
+                    json_data = json.loads(line)
+                    logger.info(f"load json files")
+                    transformed_json = transforming_data(json_data)
+                    logger.info(f"transformed data")
+                    json.dump(transformed_json, transformed_file)
+                    logger.info(f"insert in file ")
+                except json.JSONDecodeError as jde:
+                    logger.error(f"Error decoding JSON content in file {file['Key']}: {jde}")
+
+
+def transforming_data(input_data):
+    try:
+        obj = input_data["object"]  # Extract object data
+
+        transformed_doc = {
+            "_id": input_data["_id"],
+            "object": {
+                "id": obj["id"],
+                "owner_username": str(obj.get("owner_username", '')),
+                "owner_id": str(obj.get("owner_id", '')),
+                "title": str(obj.get("title", '')),
+                "tags": str(obj.get("tags", '')),
+                "uid": str(obj.get("uid", '')),
+                "visit_count": obj.get("visit_count", 0),
+                "owner_name": str(obj.get("owner_name", '')),
+                "duration": obj.get("duration", 0),
+                "posted_date": str(obj.get("posted_date", '1970-01-01')),
+                "posted_timestamp": datetime.fromtimestamp(int(obj.get("posted_timestamp", 0))).isoformat(),
+                "comments": str(obj.get("comments", '')),
+                "like_count": obj.get("like_count", None),
+                "description": str(obj.get("description", '')),
+                "is_deleted": bool(obj.get("is_deleted", False))
+            },
+            "created_at": int(datetime.fromisoformat(input_data.get("created_at", '1970-01-01')).timestamp()),
+            # Convert ISO to timestamp
+            "expire_at": int(datetime.fromisoformat(input_data.get("expire_at", '1970-01-01')).timestamp()),
+            # Convert ISO to timestamp
+            "update_count": int(input_data.get("update_count", 0))
+        }
+
+        return transformed_doc
+
+    except Exception as ve:
+        logger.error(f"Error transforming document with _id {input_data.get('_id')} in ETL s3 to MongoDB: {ve}")
+
+
