@@ -65,8 +65,6 @@ def extract_json_data(**kwargs) -> list[dict]:
 
         return tmp_filename
 
-    
-
     except Exception as e:
         logger.error(f"Failed to extract JSON data from S3: {e}")
         raise  # Re-raise the exception to ensure the task fails

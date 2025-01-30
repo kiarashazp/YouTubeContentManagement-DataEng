@@ -6,6 +6,7 @@ import json
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def load_to_mongodb(file_path: str, **kwargs) -> None:
     """
     Loads transformed data from a file into MongoDB.
