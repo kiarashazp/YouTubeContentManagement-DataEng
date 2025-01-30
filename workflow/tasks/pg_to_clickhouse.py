@@ -8,11 +8,14 @@ from airflow.models.dagrun import DagRun
 from datetime import timedelta
 
 
+
 def transfer_data_in_batches(**context):
     
-    logical_date = DagRun.execution_date  # Get the logical date (execution date) for the current run
-    start_date = logical_date   # Start of the interval
-    end_date = start_date + timedelta(days=1)
+    # logical_date = DagRun.execution_date  # Get the logical date (execution date) for the current run
+    ti = context['ti']
+    start_date = "2025-01-27"  # Start of the interval
+    print(f"Start date is: {start_date}")
+    end_date = "2025-01-29"
 
     batch_size = int(Variable.get("BATCH_SIZE_POSTGRES", default_var=1000))
 
