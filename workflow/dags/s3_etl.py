@@ -10,6 +10,7 @@ import logging
 import pendulum
 from airflow.decorators import dag
 
+from tasks.extract_json_data import extract_from_s3_and_transform_data
 from tasks.extract_json_data import extract_json_data
 from tasks.transform_json_data import transform_json_data
 from tasks.load_to_mongodb import load_to_mongodb
@@ -52,16 +53,18 @@ default_args = {
 )
 def s3_etl():
     @task()
-    def extract_json_data_from_s3(**kwargs) -> str:
-        return extract_json_data(**kwargs)
-
-    @task()
-    def transform_json_data_task(file_path: str, **kwargs) -> str:
-        return transform_json_data(file_path, **kwargs)
-
-    @task()
-    def load_json_to_mongo_task(file_path: str, **kwargs) -> None:
-        return load_to_mongodb(file_path, **kwargs)
+    def extract_json_data_and_transform_task(**kwargs):
+        return extract_from_s3_and_transform_data(**kwargs)
+    # def extract_json_data_from_s3(**kwargs) -> str:
+    #     return extract_json_data(**kwargs)
+    #
+    # @task()
+    # def transform_json_data_task(file_path: str, **kwargs) -> str:
+    #     return transform_json_data(file_path, **kwargs)
+    #
+    # @task()
+    # def load_json_to_mongo_task(file_path: str, **kwargs) -> None:
+    #     return load_to_mongodb(file_path, **kwargs)
 
     # @task()
     # def extract_mongo_task(**kwargs) -> list[dict]:
@@ -76,9 +79,10 @@ def s3_etl():
     #     return load_mongo_data(transformed_mongo_data, **kwargs)
 
     # Define task dependencies
-    file_path = extract_json_data_from_s3()
-    transformed_file_path = transform_json_data_task(file_path)
-    load_json_to_mongo_task(transformed_file_path)
+    extract_json_data_and_transform_task()
+    # file_path = extract_json_data_from_s3()
+    # transformed_file_path = transform_json_data_task(file_path)
+    # load_json_to_mongo_task(transformed_file_path)
 
     # mongo_data = extract_mongo_task()
     # transformed_mongo_data = transform_mongo_task(mongo_data)
@@ -88,6 +92,7 @@ def s3_etl():
     # load_json_to_mongo_task >> extract_mongo_task
     # extract_mongo_task >> transform_mongo_task
     # transform_mongo_task >> load_mongo_task
+
 
 # Instantiate the DAG
 dag = s3_etl()
