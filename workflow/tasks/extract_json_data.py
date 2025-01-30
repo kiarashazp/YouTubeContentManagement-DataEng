@@ -163,7 +163,7 @@ def load_to_mongodb(data, **kwargs) -> None:
         data (json): a transformed data for insert in mongodb.
         **kwargs: Additional parameters including 'db_name' and 'collection_name'.
     """
-    client, collection = connect_to_mongo(**kwargs)
+    client, collection = connect_to_mongo()
 
     try:
         # Insert transformed data into MongoDB
