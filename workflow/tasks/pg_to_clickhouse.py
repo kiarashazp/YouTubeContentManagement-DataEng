@@ -4,18 +4,17 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.models import Variable
 from utils.load_sql_query import load_query_from_file
 from clickhouse_driver import Client
-from airflow.models.dagrun import DagRun
-from datetime import timedelta
+from datetime import datetime
 
 
 
 def transfer_data_in_batches(**context):
     
     # logical_date = DagRun.execution_date  # Get the logical date (execution date) for the current run
-    ti = context['ti']
-    start_date = "2025-01-27"  # Start of the interval
-    print(f"Start date is: {start_date}")
-    end_date = "2025-01-29"
+    # ti = context['ti']
+    # start_date = "2025-01-27"  # Start of the interval
+    # end_date = "2025-01-29"
+    today = datetime.today().strftime('%Y-%m-%d')
 
     batch_size = int(Variable.get("BATCH_SIZE_POSTGRES", default_var=1000))
 
@@ -46,7 +45,7 @@ def transfer_data_in_batches(**context):
     client.execute(query)
     
     while offset < total_rows:
-        extract_postgres_batch(start_date, end_date, batch_size, offset, **context)
+        extract_postgres_batch(today, batch_size, offset, **context)
 
         load_clickhouse_batch(**context)
 

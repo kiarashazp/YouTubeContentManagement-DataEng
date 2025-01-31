@@ -3,7 +3,7 @@ from airflow.models import Variable
 from utils.load_sql_query import load_query_from_file
 
 
-def extract_postgres_batch(start_date, end_date, batch_size, offset, **context):
+def extract_postgres_batch(today, batch_size, offset, **context):
 
     # query_file_path = Variable.get("extract_postgres_query_path")
     query_file_path = "utils/extract_postgres.sql"
@@ -14,7 +14,7 @@ def extract_postgres_batch(start_date, end_date, batch_size, offset, **context):
 
     result = pg_hook.get_records(
         query,
-        parameters=(start_date, end_date, batch_size, offset)
+        parameters=(today, batch_size, offset)
     )
     
     context['ti'].xcom_push(key='batch_data', value=result)
