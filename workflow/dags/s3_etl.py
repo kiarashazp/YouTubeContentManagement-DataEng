@@ -3,13 +3,15 @@ import os
 from datetime import datetime, timedelta
 
 import pendulum
+from airflow import DAG
 from airflow.decorators import dag, task
+from airflow.operators.python import PythonOperator
 from tasks.etl_s3_to_mongodb import elt_json_to_mongodb
 from utils.telegram_alert import notify_on_failure, notify_on_success, notify_on_retry
 from clickhouse_driver import Client
 from airflow.models import Variable
 
-from tasks.etl_mongo_to_clickhouse import etl_mongo_to_clickhouse_task
+from tasks.etl_mongo_to_clickhouse import etl_mongo_to_clickhouse
 from utils.telegram_alert import notify_on_failure, notify_on_success, notify_on_retry
 
 # Set up logging
@@ -42,16 +44,18 @@ dag = DAG(
     start_date=pendulum.now().subtract(days=5),
 )
 
+
 def s3_etl():
     etl_mongo_to_clickhouse_task = PythonOperator(
         task_id='etl_mongo_to_clickhouse',
         provide_context=True,
-        python_callable=etl_mongo_to_clickhouse_task,
+        python_callable=etl_mongo_to_clickhouse,
         op_kwargs={'db_name': 'videos', 'collection_name': 'videos'},
         dag=dag,
     )
 
     etl_mongo_to_clickhouse_task
 
+
 # Instantiate the DAG
-dag = s3_etl()
+my_dag = s3_etl()

@@ -9,6 +9,7 @@ from clickhouse_driver import Client
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def etl_mongo_to_clickhouse(**kwargs):
     """
     Extracts data from MongoDB, transforms it, and loads it into ClickHouse.
