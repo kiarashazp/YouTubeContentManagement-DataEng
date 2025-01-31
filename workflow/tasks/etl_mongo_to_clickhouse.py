@@ -8,6 +8,7 @@ from utils.load_sql_query import load_query_from_file
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def etl_mongo_to_clickhouse(**kwargs):
     """
     Extracts data from MongoDB, transforms it, and loads it into ClickHouse.

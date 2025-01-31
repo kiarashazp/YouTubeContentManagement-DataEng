@@ -1,12 +1,17 @@
-from airflow import DAG
-from airflow.providers.mongo.hooks.mongo import MongoHook
-from airflow.operators.python import PythonOperator
-from datetime import datetime, timedelta
-import os
 import logging
-import pendulum
+import os
+from datetime import datetime, timedelta
 
-from tasks.etl_mongo_to_clickhouse import etl_mongo_to_clickhouse_task
+import pendulum
+from airflow import DAG
+from airflow.decorators import dag, task
+from airflow.operators.python import PythonOperator
+from tasks.etl_s3_to_mongodb import elt_json_to_mongodb
+from utils.telegram_alert import notify_on_failure, notify_on_success, notify_on_retry
+from clickhouse_driver import Client
+from airflow.models import Variable
+
+from tasks.etl_mongo_to_clickhouse import etl_mongo_to_clickhouse
 from utils.telegram_alert import notify_on_failure, notify_on_success, notify_on_retry
 
 # Set up logging
@@ -22,14 +27,14 @@ default_args = {
     'start_date': pendulum.now().subtract(days=5),  # Start date = 5 days ago
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
-    'depends_on_past': True,  
+    'depends_on_past': True,
     'on_failure_callback': notify_on_failure,
     'on_success_callback': notify_on_success,
     'on_retry_callback': notify_on_retry,
 }
 
 # DAG definition
-dag = DAG(
+with DAG(
     DAG_ID,
     default_args=default_args,
     description='DAG for incremental processing and backfilling',
@@ -37,18 +42,14 @@ dag = DAG(
     schedule_interval='0 19 * * *',  # Daily at 7 PM
     catchup=True,  # Enable backfilling
     start_date=pendulum.now().subtract(days=5),
-)
+) as dag:
 
-def s3_etl():
     etl_mongo_to_clickhouse_task = PythonOperator(
         task_id='etl_mongo_to_clickhouse',
         provide_context=True,
-        python_callable=etl_mongo_to_clickhouse_task,
+        python_callable=etl_mongo_to_clickhouse,
         op_kwargs={'db_name': 'videos', 'collection_name': 'videos'},
         dag=dag,
     )
 
-    etl_mongo_to_clickhouse_task
-
-# Instantiate the DAG
-dag = s3_etl()
+etl_mongo_to_clickhouse_task
