@@ -33,7 +33,7 @@ def etl_json_to_mongodb(**kwargs):
                     batch.append(transformed_json)
 
                 if BATCH_SIZE <= len(batch):
-                    load_json_to_mongodb(transformed_json, batch_data=batch)
+                    load_json_to_mongodb(transformed_json, batch_data=batch, **kwargs)
                     batch.clear()
 
             except json.JSONDecodeError as jde:
@@ -78,8 +78,11 @@ def transform_json_data(input_data):
         logger.error(f"Error transforming document with _id {input_data.get('_id')} in ETL s3 to MongoDB: {ve}")
 
 
-def connect_to_mongo(db_name='videos', collection_name='videos'):
+def connect_to_mongo(**kwargs):
     """Establishes a connection to MongoDB and returns the collection object."""
+
+    db_name = kwargs.get('db_name', 'videos')
+    collection_name = kwargs.get('collection_name', 'videos')
 
     mongo_hook = MongoHook(conn_id='MONGO_CONN_ID')
     client = mongo_hook.get_conn()
@@ -87,10 +90,9 @@ def connect_to_mongo(db_name='videos', collection_name='videos'):
     return client, db[collection_name]
 
 
-def load_json_to_mongodb(data, batch_data=None) -> None:
+def load_json_to_mongodb(data, batch_data=None, **kwargs) -> None:
     """Loads transformed data into MongoDB."""
-
-    client, collection = connect_to_mongo()
+    client, collection = connect_to_mongo(**kwargs)
     try:
         if batch_data:
             collection.insert_many(batch_data)
