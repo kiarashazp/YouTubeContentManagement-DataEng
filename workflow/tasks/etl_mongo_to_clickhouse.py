@@ -3,6 +3,7 @@ from datetime import timedelta
 from airflow.providers.mongo.hooks.mongo import MongoHook
 from airflow.models import Variable
 from utils.load_sql_query import load_query_from_file
+from clickhouse_driver import Client
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
