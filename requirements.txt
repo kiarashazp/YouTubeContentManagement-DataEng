@@ -1,5 +1,7 @@
 apache-airflow[celery]==2.10.3  --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.10.4/constraints-3.8.txt"
 
 boto3~=1.36.6
-telegram~=0.0.1
+python-telegram-bot==21.10
 pymongo~=4.10.1
+pendulum~=3.0.0
+telegram~=0.0.1
