@@ -60,7 +60,7 @@ def etl_mongo_to_clickhouse(**kwargs):
                 transformed_batch = []
                 for doc in batch_data:
                     videos_values = {
-                        'video_id': str(doc.get('id', '')),
+                        'id': str(doc.get('id', '')),
                         'owner_username': doc.get('owner_username', ''),
                         'owner_id': doc.get('owner_id', ''),
                         'title': doc.get('title', ''),

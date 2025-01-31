@@ -1,5 +1,5 @@
 INSERT INTO bronze.videos (
-    video_id, 
+    id,
     owner_username, 
     owner_id, 
     title, 
