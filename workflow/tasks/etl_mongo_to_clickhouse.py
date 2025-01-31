@@ -50,13 +50,16 @@ def etl_mongo_to_clickhouse(**kwargs):
                         doc = cursor.next()
                         batch_data.append(doc)
                 except StopIteration:
-                    break
-                
-                if not batch_data:
-                    break
+                    # Handle the final batch (if any)
+                    if batch_data:
+                        logger.info(f"Extracted final batch of {len(batch_data)} documents")
+                    else:
+                        logger.info("No more documents to extract.")
+                        break  # Exit the inner loop
 
                 total_extracted += len(batch_data)
                 logger.info(f"Extracted batch of {len(batch_data)} documents, total extracted: {total_extracted}")
+                
                 # Transformation part
                 logger.info(f"Transforming batch of {len(batch_data)} documents")
                 transformed_batch = []
