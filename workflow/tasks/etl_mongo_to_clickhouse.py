@@ -69,8 +69,6 @@ def etl_mongo_to_clickhouse(**kwargs):
                         'visit_count': doc.get('visit_count', 0),
                         'owner_name': doc.get('owner_name', ''),
                         'duration': doc.get('duration', 0),
-                        'posted_date': doc.get('posted_date', '1970-01-01'),
-                        'sdate_rss': doc.get('sdate_rss', '1970-01-01'),
                         'comments': doc.get('comments', ''),
                         'like_count': doc.get('like_count', 0),
                         'is_deleted': doc.get('is_deleted', False),
