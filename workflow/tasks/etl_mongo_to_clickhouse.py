@@ -55,6 +55,8 @@ def etl_mongo_to_clickhouse(**kwargs):
                 if not batch_data:
                     break
 
+                total_extracted += len(batch_data)
+                logger.info(f"Extracted batch of {len(batch_data)} documents, total extracted: {total_extracted}")
                 # Transformation part
                 logger.info(f"Transforming batch of {len(batch_data)} documents")
                 transformed_batch = []
@@ -78,8 +80,6 @@ def etl_mongo_to_clickhouse(**kwargs):
                     }
                     transformed_batch.append(videos_values)
 
-                total_extracted += len(batch_data)
-                logger.info(f"Extracted batch of {len(batch_data)} documents, total extracted: {total_extracted}")
                 logger.info(f"Successfully transformed batch of {len(transformed_batch)} documents")
 
                 # Load part
