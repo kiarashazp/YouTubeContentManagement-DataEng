@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 BATCH_SIZE = 1000  # Define batch size
 
 
-def extract_from_s3_and_transform_data(**kwargs):
+def etl_json_to_mongodb(**kwargs):
     """Extracts JSON files from S3, transforms the data, and loads it into MongoDB."""
 
     s3_resource, bucket_name, response = connect_to_s3.connected_to_s3()
