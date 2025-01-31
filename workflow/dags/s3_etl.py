@@ -4,10 +4,8 @@ from datetime import datetime, timedelta
 
 import pendulum
 from airflow import DAG
-from airflow.decorators import dag, task
 from airflow.operators.python import PythonOperator
 from tasks.etl_s3_to_mongodb import etl_json_to_mongodb
-from utils.telegram_alert import notify_on_failure, notify_on_success, notify_on_retry
 from clickhouse_driver import Client
 from airflow.models import Variable
 
