@@ -35,8 +35,8 @@ def etl_mongo_to_clickhouse(**kwargs):
             # Query MongoDB
             mongo_query = {
                 "created_at": {
-                    "$gte": start_date,
-                    "$lt": end_data
+                    "$gte": 1734715367322,
+                    "$lt": 1735913230017
                 }
             }
             logger.info(f"Executing MongoDB query: {mongo_query}")
