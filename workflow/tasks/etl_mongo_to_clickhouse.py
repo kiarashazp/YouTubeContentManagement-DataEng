@@ -40,7 +40,7 @@ def etl_mongo_to_clickhouse(**kwargs):
 
         cursor = collection.find(mongo_query).batch_size(batch_size)
         while cursor.alive:
-            batch_data = list(cursor.next_batch(batch_size))
+            batch_data = list(cursor.next(batch_size))
             if not batch_data:
                 break
 
