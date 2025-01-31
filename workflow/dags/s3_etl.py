@@ -27,7 +27,6 @@ default_args = {
     'start_date': pendulum.now().subtract(days=5),  # Start date = 5 days ago
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
-    'depends_on_past': True,
     'on_failure_callback': notify_on_failure,
     'on_success_callback': notify_on_success,
     'on_retry_callback': notify_on_retry,
