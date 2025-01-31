@@ -2,55 +2,51 @@ import json
 import logging
 from datetime import datetime
 
+from airflow.models import Variable
 from airflow.providers.mongo.hooks.mongo import MongoHook
 
-from utils import connect_to_s3
+from utils import utils
 
-# Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-BATCH_SIZE = 1000  # Define batch size
 
 
 def etl_json_to_mongodb(**kwargs):
     """Extracts JSON files from S3, transforms the data, and loads it into MongoDB."""
 
-    s3_resource, bucket_name, response = connect_to_s3.connected_to_s3()
+    BATCH_SIZE = int(Variable.get("batch_size", default_var=10000))
+    ti = kwargs['ti']
+    execution_date = ti.execution_date
 
-    if 'Contents' not in response:
-        logger.warning("No files found in the S3 bucket.")
-        return []
+    list_file_modified = utils.get_new_files(execution_date, "json")
+    s3_resource, bucket_name, response = utils.connected_to_s3()
 
-    # Process each file in the S3 bucket
-    for file in response['Contents']:
-        if not file['Key'].endswith(".json"):
-            continue
-
-        obj = s3_resource.get_object(Bucket=bucket_name, Key=file['Key'])
+    for file in list_file_modified:
+        obj = s3_resource.get_object(Bucket=bucket_name, key=file)
         content = obj['Body'].read().decode('utf-8')
-
         batch = []
         for line in content.splitlines():
             try:
                 json_data = json.loads(line)
-                transformed_json = transforming_data(json_data)
-
+                transformed_json = transform_json_data(json_data)
                 if transformed_json:
                     batch.append(transformed_json)
 
-                if len(batch) >= BATCH_SIZE:
-                    load_to_mongodb(transformed_json, batch_data=batch)
+                if BATCH_SIZE <= len(batch):
+                    load_json_to_mongodb(transformed_json, batch_data=batch)
                     batch.clear()
 
             except json.JSONDecodeError as jde:
                 logger.error(f"Error decoding JSON content in file {file['Key']}: {jde}")
 
 
-def transforming_data(input_data):
+def transform_json_data(input_data):
     """Transforms input data into the required format for MongoDB."""
     try:
         obj = input_data.get("object", {})
+
+        comments = obj.get("comments", '')
+        count_comments = 0 if comments is None else comments.split(' - ')
 
         transformed_doc = {
             "_id": input_data["_id"],
@@ -61,18 +57,18 @@ def transforming_data(input_data):
                 "title": str(obj.get("title", '')),
                 "tags": str(obj.get("tags", '')),
                 "uid": str(obj.get("uid", '')),
-                "visit_count": obj.get("visit_count", 0),
+                "visit_count": int(obj.get("visit_count", 0)),
                 "owner_name": str(obj.get("owner_name", '')),
-                "duration": obj.get("duration", 0),
+                "duration": int(obj.get("duration", 0)),
                 "posted_date": str(obj.get("posted_date", '1970-01-01')),
                 "posted_timestamp": datetime.fromtimestamp(int(obj.get("posted_timestamp", 0))).isoformat(),
-                "comments": str(obj.get("comments", '')),
+                "comments": count_comments,
                 "like_count": obj.get("like_count", None),
                 "description": str(obj.get("description", '')),
                 "is_deleted": bool(obj.get("is_deleted", False))
             },
-            "created_at": int(datetime.fromisoformat(input_data.get("created_at", '1970-01-01')).timestamp()),
-            "expire_at": int(datetime.fromisoformat(input_data.get("expire_at", '1970-01-01')).timestamp()),
+            "created_at": datetime.isoformat(input_data.get("created_at", '1970-01-01')),
+            "expire_at": datetime.isoformat(input_data.get("expire_at", '1970-01-01')),
             "update_count": int(input_data.get("update_count", 0))
         }
 
@@ -91,7 +87,7 @@ def connect_to_mongo(db_name='videos', collection_name='videos'):
     return client, db[collection_name]
 
 
-def load_to_mongodb(data, batch_data=None) -> None:
+def load_json_to_mongodb(data, batch_data=None) -> None:
     """Loads transformed data into MongoDB."""
 
     client, collection = connect_to_mongo()
