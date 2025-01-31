@@ -44,6 +44,7 @@ def s3_etl():
         task_id='etl_mongo_to_clickhouse',
         provide_context=True,
         python_callable=etl_mongo_to_clickhouse_task,
+        op_kwargs={'db_name': 'videos', 'collection_name': 'videos'},
         dag=dag,
     )
 
