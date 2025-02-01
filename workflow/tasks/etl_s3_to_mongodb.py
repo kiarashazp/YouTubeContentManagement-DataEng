@@ -69,8 +69,8 @@ def transform_json_data(input_data):
                 "description": str(obj.get("description", '')),
                 "is_deleted": bool(obj.get("is_deleted", False))
             },
-            "created_at": datetime.strptime(input_data.get("created_at"), "%Y-%m-%dT%H:%M:%SZ"),
-            "expire_at": datetime.strptime(input_data.get("expire_at"), "%Y-%m-%dT%H:%M:%SZ"),
+            "created_at": (input_data.get("created_at")),
+            "expire_at": (input_data.get("expire_at")),
             "update_count": int(input_data.get("update_count", 0) or 0)
         }
 
