@@ -36,7 +36,7 @@ with DAG(
     default_args=default_args,
     description='DAG for incremental processing and backfilling',
     tags=["ETL", "Incremental Processing", "Backfilling"],
-    schedule_interval='0 19 * * *',  # Daily at 7 PM
+    # schedule_interval='0 19 * * *',  # Daily at 7 PM
     catchup=True,  # Enable backfilling
     start_date=pendulum.now().subtract(days=30),
     end_date=pendulum.now(),
