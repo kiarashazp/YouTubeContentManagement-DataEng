@@ -23,7 +23,7 @@ def etl_json_to_mongodb(**kwargs):
     logger.info(f"------ len list file modified is: {len(list_file_modified)}")
     for file in list_file_modified:
         obj = s3_resource.Object(bucket_name, file)
-        content = obj['Body'].read().decode('utf-8')
+        content = obj.get()['Body'].read().decode('utf-8')
         batch = []
         for line in content.splitlines():
             try:
