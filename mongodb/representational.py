@@ -4,6 +4,12 @@ from datetime import datetime
 
 def transforming_data(input_data):
     # Transform the data according to the desired schema
+
+    obj = input_data.get("object", {})
+
+    comments = obj.get("comments", '')
+    count_comments = 0 if comments is None else comments.split(' - ')
+
     try:
         transformed_data = {
             "_id": input_data["_id"],
@@ -21,13 +27,13 @@ def transforming_data(input_data):
                 "posted_timestamp": datetime.fromtimestamp(int(input_data["object"]["posted_timestamp"]["$numberInt"])).isoformat(),
                 "sdate_rss": str(input_data["object"]["sdate_rss"]),
                 "sdate_rss_tp": datetime.fromtimestamp(int(input_data["object"]["sdate_rss_tp"]["$numberInt"])).isoformat(),
-                "comments": str(input_data["object"]["comments"]) if input_data["object"]["comments"] is not None else None,
+                "comments": count_comments,
                 "like_count": int(input_data["object"]["like_count"]) if input_data["object"]["like_count"] is not None else None,
                 "description": str(input_data["object"]["description"]) if input_data["object"]["description"] is not None else None,
                 "is_deleted": bool(input_data["object"]["is_deleted"])
             },
-            "created_at": int(input_data["created_at"]["$date"]["$numberLong"]),
-            "expire_at": int(input_data["expire_at"]["$date"]["$numberLong"]),
+            "created_at": datetime.fromtimestamp(int(int(input_data["created_at"]["$date"]["$numberLong"]) / 1000)).isoformat(),
+            "expire_at": datetime.fromtimestamp(int(int(input_data["expire_at"]["$date"]["$numberLong"]) / 1000)).isoformat(),
             "update_count": int(input_data["update_count"]["$numberInt"])
         }
     except Exception as ve:

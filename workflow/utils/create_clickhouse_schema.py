@@ -5,6 +5,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def create_clickhouse_schema():
     client = Client(host='clickhouse', user='airflow', password='airflow')
 
@@ -21,11 +22,11 @@ def create_clickhouse_schema():
         visit_count Int64,
         owner_name String,
         duration Int32,
-        comments Nullable(String),
+        comments Nullable(INT32),
         like_count Nullable(Int64),
         is_deleted Bool,
-        created_at Int64,
-        expire_at Int64,
+        created_at DATE,
+        expire_at DATE,
         update_count Int32
     ) ENGINE = MergeTree() PRIMARY KEY (id) ORDER BY id
     ''')
