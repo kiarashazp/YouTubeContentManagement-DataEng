@@ -37,7 +37,7 @@ with DAG(
     )
 
     mongo_to_clickhouse_etl_task = PythonOperator(
-        task_id='read_and_load_from_mongo_to_clickhouse',
+        task_id='mongo_clickhouse_etl',
         python_callable=mongo_clickhouse_etl,
         provide_context=True,
     )

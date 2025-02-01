@@ -56,7 +56,7 @@ def mongo_clickhouse_etl(**kwargs):
                                 'visit_count': obj_data.get('visit_count', 0),
                                 'owner_name': obj_data.get('owner_name', ''),
                                 'duration': obj_data.get('duration', 0),
-                                'comments': obj_data.get('comments', ''),
+                                'comments': obj_data.get('comments', 0),
                                 'like_count': obj_data.get('like_count', 0),
                                 'is_deleted': obj_data.get('is_deleted', False),
                                 'created_at': obj_data.get('created_at', datetime.datetime.now()),
