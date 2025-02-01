@@ -1,3 +1,5 @@
+import datetime
+
 from airflow.models import Variable
 from airflow.providers.mongo.hooks.mongo import MongoHook
 from clickhouse_driver import Client
@@ -57,8 +59,8 @@ def mongo_clickhouse_etl(**kwargs):
                                 'comments': obj_data.get('comments', ''),
                                 'like_count': obj_data.get('like_count', 0),
                                 'is_deleted': obj_data.get('is_deleted', False),
-                                'created_at': obj_data.get('created_at', 0),
-                                'expire_at': obj_data.get('expire_at', 0),
+                                'created_at': obj_data.get('created_at', datetime.datetime.now()),
+                                'expire_at': obj_data.get('expire_at', datetime.datetime.now()),
                                 'update_count': obj_data.get('update_count', 0)
                             }
                             batch.append(processed_doc)
