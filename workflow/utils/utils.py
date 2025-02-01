@@ -1,6 +1,5 @@
 import boto3
 from datetime import datetime, timedelta
-import pendulum
 
 
 def connected_to_s3():
@@ -26,7 +25,7 @@ def get_new_files(execution_date, file_extensions):
 
     # Calculate the date range for the execution date (e.g., files created on that day)
     start_date = execution_date
-    end_date = start_date.add(days=1)
+    end_date = start_date + timedelta(days=1)
 
     # Iterate through all objects in the bucket
     for obj in bucket.objects.all():
