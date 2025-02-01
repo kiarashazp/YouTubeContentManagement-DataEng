@@ -21,6 +21,7 @@ def etl_json_to_mongodb(**kwargs):
     list_file_modified = utils.get_new_files(start_date, "json")
     s3_resource, bucket_name = utils.connected_to_s3()
 
+    logger.info(f"------ len list file modified is: {len(list_file_modified)}")
     for file in list_file_modified:
         obj = s3_resource.get_object(Bucket=bucket_name, key=file)
         content = obj['Body'].read().decode('utf-8')
