@@ -25,8 +25,8 @@ def create_clickhouse_schema():
         comments Nullable(Int32),
         like_count Nullable(Int64),
         is_deleted Bool,
-        created_at DATE,
-        expire_at DATE,
+        created_at DateTime64,
+        expire_at DateTime64,
         update_count Int32
     ) ENGINE = MergeTree() PRIMARY KEY (id) ORDER BY id
     ''')
