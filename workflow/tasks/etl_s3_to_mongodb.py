@@ -67,8 +67,8 @@ def transform_json_data(input_data):
                 "description": str(obj.get("description", '')),
                 "is_deleted": bool(obj.get("is_deleted", False))
             },
-            "created_at": datetime.isoformat(input_data.get("created_at", '1970-01-01')),
-            "expire_at": datetime.isoformat(input_data.get("expire_at", '1970-01-01')),
+            "created_at": (input_data.get("created_at", '1970-01-01')),
+            "expire_at": (input_data.get("expire_at", '1970-01-01')),
             "update_count": int(input_data.get("update_count", 0))
         }
 
