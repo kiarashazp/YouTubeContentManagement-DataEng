@@ -56,4 +56,4 @@ with DAG(
         dag=dag,
     )
 
-etl_json_to_mongodb_task >> etl_mongo_to_clickhouse_task
+etl_mongo_to_clickhouse_task
