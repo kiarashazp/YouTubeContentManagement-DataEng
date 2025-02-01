@@ -22,14 +22,10 @@ def etl_mongo_to_clickhouse(**kwargs):
         batch_size = int(Variable.get("batch_size", default_var=1000))
         ti = kwargs['ti']
         start_date = ti.start_date
-        end_date = ti.end_date
 
         tz = pytz.timezone('UTC')  # Adjust this to your desired timezone
         if start_date.tzinfo is None:
             start_date = tz.localize(start_date)
-
-        if end_date.tzinfo is None:
-            end_date = tz.localize(end_date)
 
         logger.info(f"Extracting data for date: {start_date}")
 
@@ -46,7 +42,6 @@ def etl_mongo_to_clickhouse(**kwargs):
             mongo_query = {
                 "created_at": {
                     "$gte": start_date,
-                    "$lt": end_date
                 }
             }
             logger.info(f"Executing MongoDB query: {mongo_query}")
