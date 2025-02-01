@@ -57,19 +57,19 @@ def transform_json_data(input_data):
                 "title": str(obj.get("title", '')),
                 "tags": str(obj.get("tags", '')),
                 "uid": str(obj.get("uid", '')),
-                "visit_count": int(obj.get("visit_count", 0)),
+                "visit_count": int(obj.get("visit_count", 0) or 0),
                 "owner_name": str(obj.get("owner_name", '')),
-                "duration": int(obj.get("duration", 0)),
+                "duration": int(obj.get("duration", 0) or 0),
                 "posted_date": str(obj.get("posted_date", '1970-01-01')),
                 "posted_timestamp": datetime.fromtimestamp(int(obj.get("posted_timestamp", 0))).isoformat(),
                 "comments": count_comments,
-                "like_count": obj.get("like_count", None),
+                "like_count": obj.get("like_count", 0),
                 "description": str(obj.get("description", '')),
                 "is_deleted": bool(obj.get("is_deleted", False))
             },
             "created_at": (input_data.get("created_at", '1970-01-01')),
             "expire_at": (input_data.get("expire_at", '1970-01-01')),
-            "update_count": int(input_data.get("update_count", 0))
+            "update_count": int(input_data.get("update_count", 0) or 0)
         }
 
         return transformed_doc
