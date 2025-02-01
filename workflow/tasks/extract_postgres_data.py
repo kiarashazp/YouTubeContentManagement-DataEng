@@ -3,7 +3,7 @@ from airflow.models import Variable
 from utils.load_sql_query import load_query_from_file
 
 
-def extract_postgres_batch(batch_size, offset, **context):
+def extract_postgres_batch(batch_size, **context):
     last_processed_id = Variable.get("last_processed_id", default_var=0)
     query_file_path = "utils/extract_postgres.sql"
     pg_hook = PostgresHook(postgres_conn_id='postgres_default')
