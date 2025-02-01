@@ -45,3 +45,26 @@ def get_new_files(start_date, file_extensions):
                 new_files.append(obj.key)
 
     return new_files
+
+
+def safe_convert_datetime(value):
+    """
+    Convert a value to datetime.
+    - If already a datetime, return as-is.
+    - If string in ISO format, convert using `fromisoformat()`.
+    - If string in MongoDB format (with 'T' separator), use `strptime()`.
+    """
+    if isinstance(value, datetime):
+        return value  # Already a datetime object
+
+    elif isinstance(value, str):
+        try:
+            # If string format is "YYYY-MM-DD HH:MM:SS", convert it
+            if "T" in value:
+                return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+            else:
+                return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            return datetime(1970, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)  # Handle invalid format gracefully
+
+    return datetime(1970, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)
