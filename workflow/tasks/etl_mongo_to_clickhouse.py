@@ -78,8 +78,8 @@ def etl_mongo_to_clickhouse(**kwargs):
                         'comments': obj_data.get('comments', 0),
                         'like_count': obj_data.get('like_count', 0),
                         'is_deleted': obj_data.get('is_deleted', False),
-                        'created_at': doc.get('created_at', ''),
-                        'expire_at': doc.get('expire_at', ''),
+                        'created_at': datetime.fromisoformat(doc.get('created_at', '')),
+                        'expire_at': datetime.fromisoformat(doc.get('expire_at', '')),
                         'update_count': doc.get('update_count', 0)
                     }
                     transformed_batch.append(videos_values)
