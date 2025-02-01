@@ -13,6 +13,27 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def safe_convert_datetime(value):
+    """
+    Convert a value to datetime.
+    - If already a datetime, return as-is.
+    - If string in ISO format, convert using `fromisoformat()`.
+    - If string in MongoDB format (with 'T' separator), use `strptime()`.
+    """
+    if isinstance(value, datetime):
+        return value  # Already a datetime object
+
+    elif isinstance(value, str):
+        try:
+            # If string format is "YYYY-MM-DD HH:MM:SS", convert it
+            if "T" in value:
+                return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+            else:
+                return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            return None  # Handle invalid format gracefully
+
+
 def etl_mongo_to_clickhouse(**kwargs):
     """
     Extracts data from MongoDB, transforms it, and loads it into ClickHouse.
@@ -78,8 +99,8 @@ def etl_mongo_to_clickhouse(**kwargs):
                         'comments': obj_data.get('comments', 0),
                         'like_count': obj_data.get('like_count', 0),
                         'is_deleted': obj_data.get('is_deleted', False),
-                        'created_at': datetime.fromisoformat(doc.get('created_at', '')),
-                        'expire_at': datetime.fromisoformat(doc.get('expire_at', '')),
+                        'created_at': safe_convert_datetime(doc.get('created_at', '1970-01-01T00:00:00')),
+                        'expire_at': safe_convert_datetime(doc.get('expire_at', '1970-01-01T00:00:00')),
                         'update_count': doc.get('update_count', 0)
                     }
                     transformed_batch.append(videos_values)
