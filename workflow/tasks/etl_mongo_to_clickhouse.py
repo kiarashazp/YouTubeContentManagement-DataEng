@@ -31,7 +31,9 @@ def safe_convert_datetime(value):
             else:
                 return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
         except ValueError:
-            return None  # Handle invalid format gracefully
+            return datetime(1970, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)  # Handle invalid format gracefully
+
+    return datetime(1970, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)
 
 
 def etl_mongo_to_clickhouse(**kwargs):
