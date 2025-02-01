@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def transforming_data(input_data):
@@ -32,8 +32,8 @@ def transforming_data(input_data):
                 "description": str(input_data["object"]["description"]) if input_data["object"]["description"] is not None else None,
                 "is_deleted": bool(input_data["object"]["is_deleted"])
             },
-            "created_at": datetime.fromtimestamp(int(int(input_data["created_at"]["$date"]["$numberLong"]) / 1000)).isoformat(),
-            "expire_at": datetime.fromtimestamp(int(int(input_data["expire_at"]["$date"]["$numberLong"]) / 1000)).isoformat(),
+            "created_at": datetime.fromtimestamp(int(input_data["created_at"]["$date"]["$numberLong"]) / 1000, timezone.utc),
+            "expire_at": datetime.fromtimestamp(int(input_data["expire_at"]["$date"]["$numberLong"]) / 1000, timezone.utc),
             "update_count": int(input_data["update_count"]["$numberInt"])
         }
     except Exception as ve:
@@ -51,7 +51,9 @@ def process_file(path_input_file, path_output_file):
                     try:
                         input_data = json.loads(line.strip())
                         transformed_data = transforming_data(input_data)
-                        output_file.write(json.dumps(transformed_data, ensure_ascii=False) + '\n')
+                        output_file.write(json.dumps(transformed_data) + '\n')
                     except json.JSONDecodeError as e:
                         print(f"Error decoding JSON: {e}")
 
+
+process_file("videos.json", "rep_videos.json")

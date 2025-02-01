@@ -64,6 +64,7 @@ def etl_mongo_to_clickhouse(**kwargs):
                 logger.info(f"Transforming batch of {len(batch_data)} documents")
                 transformed_batch = []
                 for doc in batch_data:
+                    created_at = datetime.strptime(doc.get('created_at', '1970-01-01T00:00:00'), '%Y-%m-%dT%H:%M:%S')
                     videos_values = {
                         'id': str(doc.get('id', '')),
                         'owner_username': doc.get('owner_username', ''),
@@ -77,7 +78,7 @@ def etl_mongo_to_clickhouse(**kwargs):
                         'comments': doc.get('comments', ''),
                         'like_count': doc.get('like_count', 0),
                         'is_deleted': doc.get('is_deleted', False),
-                        'created_at': doc.get('created_at', 0),
+                        'created_at': created_at,
                         'expire_at': doc.get('expire_at', 0),
                         'update_count': doc.get('update_count', 0)
                     }
