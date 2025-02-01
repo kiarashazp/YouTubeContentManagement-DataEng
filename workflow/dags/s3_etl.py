@@ -38,8 +38,8 @@ with DAG(
     tags=["ETL", "Incremental Processing", "Backfilling"],
     # schedule_interval='0 19 * * *',  # Daily at 7 PM
     catchup=True,  # Enable backfilling
-    start_date=pendulum.now().subtract(days=30),
-    end_date=pendulum.now(),
+    start_date=datetime(year=2025, month=1, day=13),
+    end_date=datetime(year=2025, month=2, day=1),
 ) as dag:
 
     etl_json_to_mongodb_task = PythonOperator(
