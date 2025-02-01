@@ -45,3 +45,30 @@ def get_new_files(start_date, file_extensions):
                 new_files.append(obj.key)
 
     return new_files
+
+
+def parse_datetime(value):
+    # If the value is already a datetime object, return it as-is
+    if isinstance(value, datetime):
+        return value
+
+    # If the value is a string, try to parse it
+    elif isinstance(value, str):
+        try:
+            # Handle ISO format with 'T' separator (e.g., "2023-10-01T12:34:56.789Z")
+            if "T" in value:
+                # Try parsing with microseconds and timezone
+                try:
+                    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+                except ValueError:
+                    # Fallback to strptime for older Python versions or non-ISO formats
+                    return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=pytz.UTC)
+            else:
+                # Handle non-ISO format (e.g., "2023-10-01 12:34:56")
+                return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            # If parsing fails, return a default datetime (January 1, 1970, UTC)
+            return datetime(1970, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)
+
+    # If the value is not a datetime or string, return a default datetime
+    return datetime(1970, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)
