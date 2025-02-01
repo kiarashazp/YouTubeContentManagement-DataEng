@@ -1,6 +1,13 @@
+import logging
+
 import boto3
 from datetime import datetime, timedelta
 import pytz
+
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def connected_to_s3():
@@ -29,11 +36,15 @@ def get_new_files(start_date, file_extensions):
     if start_date.tzinfo is None:
         start_date = tz.localize(start_date)
 
+    logger.info(f'#### {start_date} - {type(start_date)}')
     # Iterate through all objects in the bucket
     for obj in bucket.objects.all():
+        logger.info(f"*!*!*! {obj}")
         if any(obj.key.endswith(ext) for ext in file_extensions):
             file_last_modified = obj.last_modified
+            logger.info(f"**** {file_last_modified} - {type(file_last_modified)}")
             if start_date <= file_last_modified:
+                logger.info("in if start_date <= file_last_modified")
                 new_files.append(obj.key)
 
     return new_files
