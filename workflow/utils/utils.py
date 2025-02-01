@@ -33,7 +33,7 @@ def get_new_files(start_date, file_extensions):
     for obj in bucket.objects.all():
         if any(obj.key.endswith(ext) for ext in file_extensions):
             file_last_modified = obj.last_modified
-            if start_date <= file_last_modified < end_date:
+            if start_date <= file_last_modified:
                 new_files.append(obj.key)
 
     return new_files
