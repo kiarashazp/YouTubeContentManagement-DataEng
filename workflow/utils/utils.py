@@ -7,19 +7,18 @@ def connected_to_s3():
     access_key = 'ab5fc903-7426-4a49-ae3e-024b53c30d27'
     secret_key = 'f70c316b936ffc50668d21442961339a90b627daa190cff89e6a395b821001f2'
     bucket_name = 'qbc'
-    s3_resource = boto3.client(
+    s3_resource = boto3.resource(
         's3', endpoint_url=endpoint_url, aws_access_key_id=access_key, aws_secret_access_key=secret_key,
     )
-    response = s3_resource.list_objects_v2(Bucket=bucket_name)
 
-    return s3_resource, bucket_name, response
+    return s3_resource, bucket_name
 
 
 def get_new_files(execution_date, file_extensions):
     """
     Retrieve new files from an S3 bucket that match the specified extensions and were created on the execution date.
     """
-    s3_resource, bucket_name, _ = connected_to_s3()
+    s3_resource, bucket_name = connected_to_s3()
     bucket = s3_resource.Bucket(bucket_name)
 
     new_files = []
