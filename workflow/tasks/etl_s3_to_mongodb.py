@@ -15,8 +15,7 @@ def etl_json_to_mongodb(**kwargs):
     """Extracts JSON files from S3, transforms the data, and loads it into MongoDB."""
 
     BATCH_SIZE = int(Variable.get("batch_size", default_var=10000))
-    ti = kwargs['ti']
-    start_date = ti.execution_date
+    start_date = kwargs['start_date']
 
     list_file_modified = utils.get_new_files(start_date, "json")
     s3_resource, bucket_name = utils.connected_to_s3()

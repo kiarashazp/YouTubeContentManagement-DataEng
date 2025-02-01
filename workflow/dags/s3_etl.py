@@ -38,14 +38,13 @@ with DAG(
     tags=["ETL", "Incremental Processing", "Backfilling"],
     # schedule_interval='0 19 * * *',  # Daily at 7 PM
     catchup=True,
-    start_date=datetime(year=2025, month=1, day=13),
 ) as dag:
 
     etl_json_to_mongodb_task = PythonOperator(
         task_id='etl_json_to_mongodb',
         provide_context=True,
         python_callable=etl_json_to_mongodb,
-        op_kwargs={'db_name': 'videos', 'collection_name': 'videos'},
+        op_kwargs={'db_name': 'videos', 'collection_name': 'videos', 'start_date': datetime(year=2025, month=1, day=13)},
         dag=dag
     )
 
