@@ -84,6 +84,9 @@ def etl_mongo_to_clickhouse(**kwargs):
                 # Transformation part
                 logger.info(f"Transforming batch of {len(batch_data)} documents")
                 transformed_batch = []
+                created_at = doc.get('created_at') if doc.get('created_at') is not None else '1970-01-01T00:00:00'
+                expired_at = doc.get('expired_at') if doc.get('expired_at') is not None else '1970-01-01T00:00:00'
+
                 for doc in batch_data:
                     obj_data = doc.get('object', {})
                     videos_values = {
@@ -99,8 +102,8 @@ def etl_mongo_to_clickhouse(**kwargs):
                         'comments': obj_data.get('comments', 0),
                         'like_count': obj_data.get('like_count', 0),
                         'is_deleted': obj_data.get('is_deleted', False),
-                        'created_at': safe_convert_datetime(doc.get('created_at', '1970-01-01T00:00:00') or '1970-01-01T00:00:00'),
-                        'expire_at': safe_convert_datetime(doc.get('expire_at', '1970-01-01T00:00:00') or '1970-01-01T00:00:00'),
+                        'created_at': safe_convert_datetime(created_at),
+                        'expire_at': safe_convert_datetime(expired_at),
                         'update_count': doc.get('update_count', 0)
                     }
                     transformed_batch.append(videos_values)
