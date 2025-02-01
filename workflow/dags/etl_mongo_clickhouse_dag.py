@@ -4,7 +4,7 @@ from datetime import datetime
 import os
 
 from utils.create_clickhouse_schema import create_clickhouse_schema
-from utils.mongo_clickhouse_etl import mongo_clickhouse_etl
+from tasks.mongo_clickhouse_etl import mongo_clickhouse_etl
 
 import logging
 
@@ -25,7 +25,7 @@ default_args = {
 # Define the DAG
 with DAG(
     DAG_ID,
-    tags=["ETL", "Phase 1","MongoDB", "ClickHouse", "Batch Processing"], 
+    tags=["ETL", "Phase 1", "MongoDB", "ClickHouse", "Batch Processing"],
     default_args=default_args, 
     schedule_interval='@once', 
     catchup=False
