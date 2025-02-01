@@ -35,7 +35,7 @@ def etl_json_to_mongodb(**kwargs):
 
                 if BATCH_SIZE <= len(batch):
                     logger.info(f"{len(batch)}")
-                    load_json_to_mongodb(transformed_json, batch_data=batch, **kwargs)
+                    load_json_to_mongodb(batch_data=batch, **kwargs)
                     batch.clear()
 
             except json.JSONDecodeError as jde:
@@ -92,15 +92,28 @@ def connect_to_mongo(**kwargs):
     return client, db[collection_name]
 
 
-def load_json_to_mongodb(data, batch_data=None, **kwargs) -> None:
+def load_json_to_mongodb(batch_data=None, **kwargs) -> None:
     """Loads transformed data into MongoDB."""
     client, collection = connect_to_mongo(**kwargs)
     try:
         if batch_data:
             collection.insert_many(batch_data)
-        else:
-            collection.insert_one(data)
-        logger.info(f"Successfully inserted document into MongoDB: {data['_id']}")
+
+        collection.update_many(
+            {'created_at': {'$type': 'string'}},
+            [
+                {
+                    '$set': {
+                        'created_at': {
+                            '$dateFromString': {'dateString': '$created_at'}
+                        }
+                    }
+                }
+            ]
+        )
+
+        logger.info(f"Successfully inserted document into MongoDB: {batch_data[0]['_id']} - {batch_data[-1]['_id']}")
+
     except Exception as ve:
         logger.error(f"Error inserting many documents in MongoDB: {ve}")
     finally:
