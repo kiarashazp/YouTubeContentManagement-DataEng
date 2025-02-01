@@ -20,14 +20,9 @@ def etl_mongo_to_clickhouse(**kwargs):
     try:
         # Extraction part
         batch_size = int(Variable.get("batch_size", default_var=1000))
-        ti = kwargs['ti']
-        start_date = ti.start_date
+        start_date = kwargs['start_date']
 
-        tz = pytz.timezone('UTC')  # Adjust this to your desired timezone
-        if start_date.tzinfo is None:
-            start_date = tz.localize(start_date)
-
-        logger.info(f"Extracting data for date: {start_date}")
+        logger.info(f"Extracting data for date gte: {start_date}")
 
         # Connect to MongoDB
         mongo_hook = MongoHook(conn_id='MONGO_CONN_ID')

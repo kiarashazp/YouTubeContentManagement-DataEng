@@ -52,7 +52,7 @@ with DAG(
         task_id='etl_mongo_to_clickhouse',
         provide_context=True,
         python_callable=etl_mongo_to_clickhouse,
-        op_kwargs={'db_name': 'videos', 'collection_name': 'videos'},
+        op_kwargs={'db_name': 'videos', 'collection_name': 'videos', 'start_date': datetime(year=2025, month=1, day=13)},
         dag=dag,
     )
 
