@@ -26,7 +26,11 @@ def get_new_files(execution_date, file_extensions):
 
     # Calculate the date range for the execution date (e.g., files created on that day)
     tz = pytz.timezone('UTC')  # Adjust this to your desired timezone
-    start_date = tz.localize(execution_date)
+    if execution_date.tzinfo is None:
+        start_date = tz.localize(execution_date)
+    else:
+        start_date = execution_date
+
     end_date = start_date + timedelta(days=1)
 
     # Iterate through all objects in the bucket
