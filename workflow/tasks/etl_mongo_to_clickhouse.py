@@ -74,7 +74,7 @@ def etl_mongo_to_clickhouse(**kwargs):
                         'visit_count': doc.get('visit_count', 0),
                         'owner_name': doc.get('owner_name', ''),
                         'duration': doc.get('duration', 0),
-                        'comments': doc.get('comments', ''),
+                        'comments': doc.get('comments', 0),
                         'like_count': doc.get('like_count', 0),
                         'is_deleted': doc.get('is_deleted', False),
                         'created_at': doc.get('created_at', datetime(1970, month=1, day=1)),
