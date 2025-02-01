@@ -47,24 +47,28 @@ def get_new_files(start_date, file_extensions):
     return new_files
 
 
-def safe_convert_datetime(value):
-    """
-    Convert a value to datetime.
-    - If already a datetime, return as-is.
-    - If string in ISO format, convert using `fromisoformat()`.
-    - If string in MongoDB format (with 'T' separator), use `strptime()`.
-    """
+def parse_datetime(value):
+    # If the value is already a datetime object, return it as-is
     if isinstance(value, datetime):
-        return value  # Already a datetime object
+        return value
 
+    # If the value is a string, try to parse it
     elif isinstance(value, str):
         try:
-            # If string format is "YYYY-MM-DD HH:MM:SS", convert it
+            # Handle ISO format with 'T' separator (e.g., "2023-10-01T12:34:56.789Z")
             if "T" in value:
-                return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+                # Try parsing with microseconds and timezone
+                try:
+                    return datetime.fromisoformat(value.replace("Z", "+00:00"))
+                except ValueError:
+                    # Fallback to strptime for older Python versions or non-ISO formats
+                    return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=pytz.UTC)
             else:
+                # Handle non-ISO format (e.g., "2023-10-01 12:34:56")
                 return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
         except ValueError:
-            return datetime(1970, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)  # Handle invalid format gracefully
+            # If parsing fails, return a default datetime (January 1, 1970, UTC)
+            return datetime(1970, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)
 
+    # If the value is not a datetime or string, return a default datetime
     return datetime(1970, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)

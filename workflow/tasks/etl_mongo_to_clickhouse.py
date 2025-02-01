@@ -6,7 +6,7 @@ from airflow.providers.mongo.hooks.mongo import MongoHook
 from airflow.models import Variable
 from pendulum import Timezone
 from utils.load_sql_query import load_query_from_file
-from utils.utils import safe_convert_datetime
+from utils.utils import parse_datetime
 from clickhouse_driver import Client
 
 # Set up logging
@@ -82,8 +82,8 @@ def etl_mongo_to_clickhouse(**kwargs):
                         'comments': obj_data.get('comments', 0),
                         'like_count': obj_data.get('like_count', 0),
                         'is_deleted': obj_data.get('is_deleted', False),
-                        'created_at': safe_convert_datetime(created_at),
-                        'expire_at': safe_convert_datetime(expired_at),
+                        'created_at': parse_datetime(created_at),
+                        'expire_at': parse_datetime(expired_at),
                         'update_count': doc.get('update_count', 0)
                     }
                     transformed_batch.append(videos_values)
