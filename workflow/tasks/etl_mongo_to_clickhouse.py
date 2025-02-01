@@ -64,20 +64,21 @@ def etl_mongo_to_clickhouse(**kwargs):
                 logger.info(f"Transforming batch of {len(batch_data)} documents")
                 transformed_batch = []
                 for doc in batch_data:
+                    obj_data = doc.get('object', {})
                     videos_values = {
                         'id': str(doc.get('id', '')),
-                        'owner_username': doc.get('owner_username', ''),
-                        'owner_id': doc.get('owner_id', ''),
-                        'title': doc.get('title', ''),
-                        'tags': doc.get('tags', ''),
-                        'uid': doc.get('uid', ''),
-                        'visit_count': doc.get('visit_count', 0),
-                        'owner_name': doc.get('owner_name', ''),
-                        'duration': doc.get('duration', 0),
-                        'comments': doc.get('comments', 0),
-                        'like_count': doc.get('like_count', 0),
-                        'is_deleted': doc.get('is_deleted', False),
-                        'created_at': doc.get('created_at', datetime(1970, month=1, day=1)),
+                        'owner_username': obj_data.get('owner_username', ''),
+                        'owner_id': obj_data.get('owner_id', ''),
+                        'title': obj_data.get('title', ''),
+                        'tags': obj_data.get('tags', ''),
+                        'uid': obj_data.get('uid', ''),
+                        'visit_count': obj_data.get('visit_count', 0),
+                        'owner_name': obj_data.get('owner_name', ''),
+                        'duration': obj_data.get('duration', 0),
+                        'comments': obj_data.get('comments', 0),
+                        'like_count': obj_data.get('like_count', 0),
+                        'is_deleted': obj_data.get('is_deleted', False),
+                        'created_at': doc.get('created_at', datetime(year=1970, month=1, day=1)),
                         'expire_at': doc.get('expire_at', 0),
                         'update_count': doc.get('update_count', 0)
                     }
