@@ -4,10 +4,8 @@ from datetime import datetime, timedelta
 
 import pendulum
 from airflow import DAG
-from airflow.decorators import dag, task
 from airflow.operators.python import PythonOperator
 from tasks.etl_s3_to_mongodb import etl_json_to_mongodb
-from utils.telegram_alert import notify_on_failure, notify_on_success, notify_on_retry
 from clickhouse_driver import Client
 from airflow.models import Variable
 
@@ -43,6 +41,14 @@ with DAG(
     start_date=pendulum.now().subtract(days=5),
 ) as dag:
 
+    etl_json_to_mongodb_task = PythonOperator(
+        task_id='etl_json_to_mongodb',
+        provide_context=True,
+        python_callable=etl_json_to_mongodb,
+        op_kwargs={'db_name': 'videos', 'collection_name': 'videos'},
+        dag=dag
+    )
+
     etl_mongo_to_clickhouse_task = PythonOperator(
         task_id='etl_mongo_to_clickhouse',
         provide_context=True,
@@ -51,4 +57,4 @@ with DAG(
         dag=dag,
     )
 
-etl_mongo_to_clickhouse_task
+etl_json_to_mongodb_task >> etl_mongo_to_clickhouse_task
