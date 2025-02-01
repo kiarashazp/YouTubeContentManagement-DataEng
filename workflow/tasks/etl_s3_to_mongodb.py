@@ -32,7 +32,6 @@ def etl_json_to_mongodb(**kwargs):
                 transformed_json = transform_json_data(json_data)
                 if transformed_json:
                     batch.append(transformed_json)
-                    logger.info(len(batch))
 
                 if BATCH_SIZE <= len(batch):
                     logger.info(f"{len(batch)}")
