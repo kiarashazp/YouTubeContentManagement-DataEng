@@ -1,5 +1,7 @@
 import logging
 from datetime import timedelta, datetime
+
+import pytz
 from airflow.providers.mongo.hooks.mongo import MongoHook
 from airflow.models import Variable
 from pendulum import Timezone
@@ -19,8 +21,16 @@ def etl_mongo_to_clickhouse(**kwargs):
         # Extraction part
         batch_size = int(Variable.get("batch_size", default_var=1000))
         ti = kwargs['ti']
-        start_date = datetime(2025, 1, 21, 17, 1, 38, 298788, tzinfo=Timezone('UTC'))
-        end_data = datetime(2025, 1, 31, 17, 1, 38, 298788, tzinfo=Timezone('UTC'))
+        start_date = ti.start_date
+        end_date = ti.end_date
+
+        tz = pytz.timezone('UTC')  # Adjust this to your desired timezone
+        if start_date.tzinfo is None:
+            start_date = tz.localize(start_date)
+
+        if end_date.tzinfo is None:
+            end_date = tz.localize(end_date)
+
         logger.info(f"Extracting data for date: {start_date}")
 
         # Connect to MongoDB
@@ -35,8 +45,8 @@ def etl_mongo_to_clickhouse(**kwargs):
             # Query MongoDB
             mongo_query = {
                 "created_at": {
-                    "$gte": 1734715367322,
-                    "$lt": 1735913230017
+                    "$gte": start_date,
+                    "$lt": end_date
                 }
             }
             logger.info(f"Executing MongoDB query: {mongo_query}")

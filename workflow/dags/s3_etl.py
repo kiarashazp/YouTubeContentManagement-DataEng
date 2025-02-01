@@ -22,7 +22,7 @@ DAG_ID = os.path.basename(__file__).replace(".py", "")
 # Define the DAG
 default_args = {
     'owner': 'airflow',
-    'start_date': pendulum.now().subtract(days=5),  # Start date = 5 days ago
+    # 'start_date': pendulum.now().subtract(days=5),  # Start date = 5 days ago
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
     'on_failure_callback': notify_on_failure,
@@ -38,7 +38,8 @@ with DAG(
     tags=["ETL", "Incremental Processing", "Backfilling"],
     schedule_interval='0 19 * * *',  # Daily at 7 PM
     catchup=True,  # Enable backfilling
-    start_date=pendulum.now().subtract(days=5),
+    start_date=pendulum.now().subtract(days=30),
+    end_date=pendulum.now(),
 ) as dag:
 
     etl_json_to_mongodb_task = PythonOperator(

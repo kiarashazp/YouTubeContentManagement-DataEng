@@ -15,7 +15,7 @@ def connected_to_s3():
     return s3_resource, bucket_name
 
 
-def get_new_files(execution_date, file_extensions):
+def get_new_files(start_date, end_date, file_extensions):
     """
     Retrieve new files from an S3 bucket that match the specified extensions and were created on the execution date.
     """
@@ -26,12 +26,11 @@ def get_new_files(execution_date, file_extensions):
 
     # Calculate the date range for the execution date (e.g., files created on that day)
     tz = pytz.timezone('UTC')  # Adjust this to your desired timezone
-    if execution_date.tzinfo is None:
-        start_date = tz.localize(execution_date)
-    else:
-        start_date = execution_date
+    if start_date.tzinfo is None:
+        start_date = tz.localize(start_date)
 
-    end_date = start_date + timedelta(days=1)
+    if end_date.tzinfo is None:
+        end_date = tz.localize(end_date)
 
     # Iterate through all objects in the bucket
     for obj in bucket.objects.all():
