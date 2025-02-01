@@ -15,6 +15,7 @@ def etl_json_to_mongodb(**kwargs):
     """Extracts JSON files from S3, transforms the data, and loads it into MongoDB."""
 
     BATCH_SIZE = int(Variable.get("batch_size", default_var=10000))
+    logger.info(f"Batch size {BATCH_SIZE}")
     start_date = kwargs['start_date']
 
     list_file_modified = utils.get_new_files(start_date, "json")
@@ -31,8 +32,10 @@ def etl_json_to_mongodb(**kwargs):
                 transformed_json = transform_json_data(json_data)
                 if transformed_json:
                     batch.append(transformed_json)
+                    logger.info(len(batch))
 
                 if BATCH_SIZE <= len(batch):
+                    logger.info(f"{len(batch)}")
                     load_json_to_mongodb(transformed_json, batch_data=batch, **kwargs)
                     batch.clear()
 
