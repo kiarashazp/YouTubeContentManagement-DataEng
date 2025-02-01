@@ -2,7 +2,6 @@ import logging
 import os
 from datetime import datetime, timedelta
 
-import pendulum
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from tasks.etl_s3_to_mongodb import etl_json_to_mongodb
@@ -56,4 +55,4 @@ with DAG(
         dag=dag,
     )
 
-etl_mongo_to_clickhouse_task
+etl_json_to_mongodb_task >> etl_mongo_to_clickhouse_task
