@@ -6,35 +6,12 @@ from airflow.providers.mongo.hooks.mongo import MongoHook
 from airflow.models import Variable
 from pendulum import Timezone
 from utils.load_sql_query import load_query_from_file
+from utils import parse_datetime
 from clickhouse_driver import Client
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-
-def safe_convert_datetime(value):
-    """
-    Convert a value to datetime.
-    - If already a datetime, return as-is.
-    - If string in ISO format, convert using `fromisoformat()`.
-    - If string in MongoDB format (with 'T' separator), use `strptime()`.
-    """
-    if isinstance(value, datetime):
-        return value  # Already a datetime object
-
-    elif isinstance(value, str):
-        try:
-            # If string format is "YYYY-MM-DD HH:MM:SS", convert it
-            if "T" in value:
-                return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
-            else:
-                return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
-        except ValueError:
-            return datetime(1970, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)  # Handle invalid format gracefully
-
-    return datetime(1970, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)
-
 
 def etl_mongo_to_clickhouse(**kwargs):
     """
@@ -104,8 +81,8 @@ def etl_mongo_to_clickhouse(**kwargs):
                         'comments': obj_data.get('comments', 0),
                         'like_count': obj_data.get('like_count', 0),
                         'is_deleted': obj_data.get('is_deleted', False),
-                        'created_at': safe_convert_datetime(created_at),
-                        'expire_at': safe_convert_datetime(expired_at),
+                        'created_at': parse_datetime(created_at),
+                        'expire_at': parse_datetime(expired_at),
                         'update_count': doc.get('update_count', 0)
                     }
                     transformed_batch.append(videos_values)
