@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 def etl_json_to_mongodb(**kwargs):
     """Extracts JSON files from S3, transforms the data, and loads it into MongoDB."""
 
-    BATCH_SIZE = int(Variable.get("batch_size", default_var=10000))
+    BATCH_SIZE = int(Variable.get("batch_size", default_var=1000))
     logger.info(f"Batch size {BATCH_SIZE}")
     start_date = kwargs['start_date']
 
