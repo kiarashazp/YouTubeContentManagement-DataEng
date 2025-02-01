@@ -99,8 +99,8 @@ def etl_mongo_to_clickhouse(**kwargs):
                         'comments': obj_data.get('comments', 0),
                         'like_count': obj_data.get('like_count', 0),
                         'is_deleted': obj_data.get('is_deleted', False),
-                        'created_at': safe_convert_datetime(doc.get('created_at', '1970-01-01T00:00:00')),
-                        'expire_at': safe_convert_datetime(doc.get('expire_at', '1970-01-01T00:00:00')),
+                        'created_at': safe_convert_datetime(doc.get('created_at', '1970-01-01T00:00:00') or '1970-01-01T00:00:00'),
+                        'expire_at': safe_convert_datetime(doc.get('expire_at', '1970-01-01T00:00:00') or '1970-01-01T00:00:00'),
                         'update_count': doc.get('update_count', 0)
                     }
                     transformed_batch.append(videos_values)
