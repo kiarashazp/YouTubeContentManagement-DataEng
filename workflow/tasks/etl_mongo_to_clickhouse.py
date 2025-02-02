@@ -21,7 +21,9 @@ def etl_mongo_to_clickhouse(**kwargs):
     try:
         # Extraction part
         batch_size = int(Variable.get("batch_size", default_var=1000))
-        start_date = kwargs['start_date']
+        # start_date = kwargs['start_date']
+        ti = kwargs["ti"]
+        start_date = ti.start_date
 
         logger.info(f"Extracting data for date gte: {start_date}")
 
