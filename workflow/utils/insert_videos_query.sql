@@ -1,5 +1,5 @@
 INSERT INTO bronze.videos (
-    video_id, 
+    id,
     owner_username, 
     owner_id, 
     title, 
@@ -8,9 +8,7 @@ INSERT INTO bronze.videos (
     visit_count, 
     owner_name, 
     duration, 
-    posted_date, 
-    sdate_rss,
-    comments, 
+    comments,
     like_count, 
     is_deleted, 
     created_at, 

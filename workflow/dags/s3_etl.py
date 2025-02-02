@@ -2,27 +2,26 @@ import logging
 import os
 from datetime import datetime, timedelta
 
-import pendulum
-from airflow.decorators import dag, task
-from tasks.extract_json_data import extract_from_s3_and_transform_data
-from tasks.extract_mongo_data import extract_mongo_data
-from tasks.transform_mongo_data import transform_mongo_data
-from tasks.load_mongo_data import load_mongo_data
-from utils.telegram_alert import notify_on_failure, notify_on_success, notify_on_retry
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from tasks.etl_s3_to_mongodb import etl_json_to_mongodb
 from clickhouse_driver import Client
 from airflow.models import Variable
 
+from tasks.etl_mongo_to_clickhouse import etl_mongo_to_clickhouse
+from utils.telegram_alert import notify_on_failure, notify_on_success, notify_on_retry
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-start_date = datetime.now() - timedelta(days=5)
+# DAG-level variables
 DAG_ID = os.path.basename(__file__).replace(".py", "")
 
+# Define the DAG
 default_args = {
     'owner': 'airflow',
-    'start_date': start_date,
+    # 'start_date': pendulum.now().subtract(days=5),  # Start date = 5 days ago
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
     'on_failure_callback': notify_on_failure,
@@ -30,36 +29,30 @@ default_args = {
     'on_retry_callback': notify_on_retry,
 }
 
+# DAG definition
+with DAG(
+    DAG_ID,
+    default_args=default_args,
+    description='DAG for incremental processing and backfilling',
+    tags=["ETL", "Incremental Processing", "Backfilling"],
+    # schedule_interval='0 19 * * *',  # Daily at 7 PM
+    catchup=True,
+) as dag:
 
-# Use the @dag decorator to define your DAG
-@dag(default_args=default_args, schedule_interval='0 19 * * *', catchup=True,
-     start_date=pendulum.now().subtract(days=5),
-     description='DAG for incremental processing and backfilling', tags=["ETL", "Incremental Processing", "Backfilling"])
-def s3_etl():
+    etl_json_to_mongodb_task = PythonOperator(
+        task_id='etl_json_to_mongodb',
+        provide_context=True,
+        python_callable=etl_json_to_mongodb,
+        op_kwargs={'db_name': 'videos', 'collection_name': 'videos', 'start_date': datetime(year=2025, month=1, day=13)},
+        dag=dag
+    )
 
-    @task()
-    def extract_json_data_and_transform_task(**kwargs):
-        return extract_from_s3_and_transform_data(**kwargs)
+    etl_mongo_to_clickhouse_task = PythonOperator(
+        task_id='etl_mongo_to_clickhouse',
+        provide_context=True,
+        python_callable=etl_mongo_to_clickhouse,
+        op_kwargs={'db_name': 'videos', 'collection_name': 'videos', 'start_date': datetime(year=2025, month=1, day=13)},
+        dag=dag,
+    )
 
-    # @task()
-    # def extract_mongo_task(**kwargs) -> list[dict]:
-    #     return extract_mongo_data(**kwargs)
-
-    # @task()
-    # def transform_mongo_task(mongo_data: list[dict], **kwargs) -> list[dict]:
-    #     return transform_mongo_data(mongo_data, **kwargs)
-
-    # @task()
-    # def load_mongo_task(transformed_mongo_data: list[dict], **kwargs) -> None:
-    #     return load_mongo_data(transformed_mongo_data, **kwargs)
-
-    # Define task dependencies
-    extract_json_data_and_transform_task()
-
-    # mongo_data = extract_mongo_task()
-    # transformed_mongo_data = transform_mongo_task(mongo_data)
-    # load_mongo_task(transformed_mongo_data)
-
-
-# Instantiate the DAG
-dag = s3_etl()
+etl_json_to_mongodb_task >> etl_mongo_to_clickhouse_task
