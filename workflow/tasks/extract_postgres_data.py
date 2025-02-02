@@ -17,5 +17,6 @@ def extract_postgres_batch(batch_size, **context):
     if result:
         Variable.set("last_processed_id", result[-1][0])
         context['ti'].xcom_push(key='batch_data', value=result)
+        return True
     else:
         return False
