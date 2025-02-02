@@ -38,7 +38,7 @@ with DAG(
     description='DAG for incremental processing and backfilling',
     tags=["ETL", "Incremental Processing", "Backfilling"],
     schedule_interval='0 19 * * *',  # Daily at 7 PM
-    catchup=True,
+    catchup=False,
 ) as dag:
 
     etl_json_to_mongodb_task = PythonOperator(

@@ -12,7 +12,7 @@ def process_csv_files(**context):
     execution_date = context['execution_date']
     
     # Connect to S3
-    s3_resource, bucket_name, _ = connected_to_s3()
+    s3_resource, bucket_name = connected_to_s3()
 
     # Get processed files
     pg_hook = PostgresHook(postgres_conn_id='postgres_default')
