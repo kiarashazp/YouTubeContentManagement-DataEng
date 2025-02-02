@@ -1,3 +1,4 @@
+import boto3
 import logging
 import traceback
 import pandas as pd
@@ -12,6 +13,20 @@ def process_csv_files(**context):
     execution_date = context['execution_date']
     
     # Connect to S3
+    S3_CONFIG = {
+    'bucket_name': 'qbc',
+    'prefix': '',
+    'aws_access_key_id': 'ab5fc903-7426-4a49-ae3e-024b53c30d27',
+    'aws_secret_access_key': 'f70c316b936ffc50668d21442961339a90b627daa190cff89e6a395b821001f2',
+    'endpoint_url': 'https://s3.ir-thr-at1.arvanstorage.ir'
+    }
+
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=S3_CONFIG['aws_access_key_id'],
+        aws_secret_access_key=S3_CONFIG['aws_secret_access_key'],
+        endpoint_url=S3_CONFIG['endpoint_url']
+    )
     s3_resource, bucket_name = connected_to_s3()
 
     # Get processed files
@@ -22,8 +37,8 @@ def process_csv_files(**context):
         processed_files = {row[0] for row in cur.fetchall()}
 
     # List S3 objects
-    paginator = s3_resource.get_paginator('list_objects_v2')
-    page_iterator = paginator.paginate(Bucket=bucket_name, Prefix='')
+    paginator = s3.get_paginator('list_objects_v2')
+    page_iterator = paginator.paginate(Bucket=S3_CONFIG['bucket_name'], Prefix=S3_CONFIG['prefix'])
 
     for page in page_iterator:
         for obj in page.get('Contents', []):
