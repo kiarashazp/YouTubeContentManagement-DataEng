@@ -11,15 +11,16 @@ def process_csv_files(**context):
     logging.info("Starting S3 CSV processing")
     execution_date = context['execution_date']
     
-    # Connect to S3
+    # S3 Configuration
     S3_CONFIG = {
-    'bucket_name': 'qbc',
-    'prefix': '',
-    'aws_access_key_id': 'ab5fc903-7426-4a49-ae3e-024b53c30d27',
-    'aws_secret_access_key': 'f70c316b936ffc50668d21442961339a90b627daa190cff89e6a395b821001f2',
-    'endpoint_url': 'https://s3.ir-thr-at1.arvanstorage.ir'
+        'bucket_name': 'qbc',
+        'prefix': '',
+        'aws_access_key_id': 'ab5fc903-7426-4a49-ae3e-024b53c30d27',
+        'aws_secret_access_key': 'f70c316b936ffc50668d21442961339a90b627daa190cff89e6a395b821001f2',
+        'endpoint_url': 'https://s3.ir-thr-at1.arvanstorage.ir'
     }
 
+    # Initialize S3 client
     s3 = boto3.client(
         's3',
         aws_access_key_id=S3_CONFIG['aws_access_key_id'],
@@ -27,7 +28,7 @@ def process_csv_files(**context):
         endpoint_url=S3_CONFIG['endpoint_url']
     )
 
-    # Get processed files
+    # Get processed files from PostgreSQL
     pg_hook = PostgresHook(postgres_conn_id='postgres_default')
     conn = pg_hook.get_conn()
     with conn.cursor() as cur:
@@ -64,7 +65,7 @@ def process_csv_files(**context):
             # Process the file
             try:
                 logging.info(f"Processing {key}")
-                response = s3_resource.get_object(Bucket=bucket_name, Key=key)
+                response = s3.get_object(Bucket=S3_CONFIG['bucket_name'], Key=key)
                 df = pd.read_csv(io.BytesIO(response['Body'].read()))
 
                 process_dataframe(df, key)
