@@ -55,7 +55,7 @@ def parse_datetime(value):
     # If the value is a string, try to parse it
     elif isinstance(value, str):
         try:
-            # Handle ISO format with 'T' separator (e.g., "2023-10-01T12:34:56.789Z")
+            # Handle ISO formatted with 'T' separator (e.g., "2023-10-01T12:34:56.789Z")
             if "T" in value:
                 # Try parsing with microseconds and timezone
                 try:

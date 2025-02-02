@@ -8,7 +8,6 @@ def load_clickhouse_batch(**context):
     query_file_path = "utils/load_clickhouse.sql"
     query = load_query_from_file(query_file_path)
 
-
     client = Client(
         host='clickhouse',
         port=9000,

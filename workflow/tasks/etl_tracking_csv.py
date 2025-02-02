@@ -1,6 +1,7 @@
 import logging
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
+
 def create_tracking_table(**context):
     logging.info("Creating/verifying tracking table")
     try:

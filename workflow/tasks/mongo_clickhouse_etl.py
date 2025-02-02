@@ -19,7 +19,7 @@ def mongo_clickhouse_etl(**kwargs):
     batch_size = int(Variable.get("mongo_batch_size", default_var=1000))
 
     try:
-         # Connect to MongoDB
+        # Connect to MongoDB
         mongo_hook = MongoHook(conn_id='MONGO_CONN_ID')
         with mongo_hook.get_conn() as client:
             db_name = kwargs.get('db_name', 'videos')
@@ -28,7 +28,7 @@ def mongo_clickhouse_etl(**kwargs):
             db = client[db_name]
             collection = db[collection_name]
             cursor = collection.find().batch_size(batch_size)
-             # Initialize counters and track processed documents
+            # Initialize counters and track processed documents
             batch_number = 0
             processed_ids = set()
 
@@ -96,9 +96,8 @@ def mongo_clickhouse_etl(**kwargs):
                     # No more documents to process
                     break
         logger.info("ETL task completed")
-    except Exception as e:    
+    except Exception as e:
         logger.error(f"ETL task failed: {e}")
         raise
-    
 
-    
+

@@ -7,6 +7,7 @@ from datetime import datetime
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from utils.process_csv import process_dataframe, update_tracking_table
 
+
 def process_csv_files(**context):
     logging.info("Starting S3 CSV processing")
     execution_date = context['execution_date']

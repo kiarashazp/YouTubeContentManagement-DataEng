@@ -7,14 +7,12 @@ from clickhouse_driver import Client
 from datetime import datetime
 
 
-
 def transfer_data_in_batches(**context):
 
     batch_size = int(Variable.get("BATCH_SIZE_POSTGRES", default_var=10000))
     
     query_file_path = "utils/clickhouse_schema_channels.sql"
     query = load_query_from_file(query_file_path)
-
 
     client = Client(
         host='clickhouse',
