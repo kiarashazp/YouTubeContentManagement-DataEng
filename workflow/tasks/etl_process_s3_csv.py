@@ -5,7 +5,6 @@ import pandas as pd
 import io
 from datetime import datetime
 from airflow.providers.postgres.hooks.postgres import PostgresHook
-from utils.utils import connected_to_s3
 from utils.process_csv import process_dataframe, update_tracking_table
 
 def process_csv_files(**context):
@@ -27,7 +26,6 @@ def process_csv_files(**context):
         aws_secret_access_key=S3_CONFIG['aws_secret_access_key'],
         endpoint_url=S3_CONFIG['endpoint_url']
     )
-    s3_resource, bucket_name = connected_to_s3()
 
     # Get processed files
     pg_hook = PostgresHook(postgres_conn_id='postgres_default')
