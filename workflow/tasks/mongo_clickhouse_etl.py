@@ -5,8 +5,7 @@ from airflow.providers.mongo.hooks.mongo import MongoHook
 from clickhouse_driver import Client
 import logging
 
-from utils.load_sql_query import load_query_from_file
-from utils.prepare_batch_data import prepare_batch_data
+from utils.utils import load_query_from_file, prepare_batch_data
 
 
 # Set up logging

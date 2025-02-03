@@ -1,6 +1,6 @@
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.models import Variable
-from utils.load_sql_query import load_query_from_file
+from utils.utils import load_query_from_file
 
 
 def extract_postgres_batch(batch_size, **context):

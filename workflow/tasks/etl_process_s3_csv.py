@@ -5,7 +5,7 @@ import pandas as pd
 import io
 from datetime import datetime
 from airflow.providers.postgres.hooks.postgres import PostgresHook
-from utils.process_csv import process_dataframe, update_tracking_table
+from utils.utils import process_dataframe, update_tracking_table
 
 
 def process_csv_files(**context):

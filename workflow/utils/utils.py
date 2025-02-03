@@ -1,8 +1,10 @@
 import logging
-
+from clickhouse_driver import Client
 import boto3
-from datetime import datetime, timedelta
+from datetime import datetime
 import pytz
+import pandas as pd
+from airflow.providers.postgres.hooks.postgres import PostgresHook
 
 
 # Set up logging
@@ -72,3 +74,105 @@ def parse_datetime(value):
 
     # If the value is not a datetime or string, return a default datetime
     return datetime(1970, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)
+
+def create_clickhouse_schema():
+    client = Client(host='clickhouse', user='airflow', password='airflow')
+
+    client.execute('CREATE DATABASE IF NOT EXISTS bronze')
+
+    client.execute('''
+    CREATE TABLE IF NOT EXISTS bronze.videos (
+        id String,
+        owner_username String,
+        owner_id String,
+        title String,
+        tags Nullable(String),
+        uid String,
+        visit_count Int64,
+        owner_name String,
+        duration Int32,
+        comments Nullable(Int32),
+        like_count Nullable(Int64),
+        is_deleted Bool,
+        created_at DateTime64,
+        expire_at DateTime64,
+        update_count Int32
+    ) ENGINE = MergeTree() PRIMARY KEY (id) ORDER BY id
+    ''')
+
+    logger.info("ClickHouse schema created successfully.")
+    client.disconnect()
+
+def load_query_from_file(file_path):
+
+    with open(file_path, 'r') as file:
+        query = file.read()
+    return query
+
+def prepare_batch_data(batch):
+    """
+    Prepare a batch of documents for insertion into ClickHouse.
+
+    Args:
+        batch (list): A list of documents (dictionaries) from MongoDB.
+
+    Returns:
+        list: A list of tuples in the format required for ClickHouse insertion.
+    """
+    return [
+        (
+            doc['id'],
+            doc['owner_username'],
+            doc['owner_id'],
+            doc['title'],
+            doc['tags'],
+            doc['uid'],
+            doc['visit_count'],
+            doc['owner_name'],
+            doc['duration'],
+            doc['comments'],
+            doc['like_count'],
+            doc['is_deleted'],
+            doc['created_at'],
+            doc['expire_at'],
+            doc['update_count']
+        )
+        for doc in batch
+    ]
+
+def process_dataframe(df: pd.DataFrame, file_name: str):
+    required_columns = ['_id', 'created_at']
+    if not all(col in df.columns for col in required_columns):
+        raise ValueError(f"Missing required columns in {file_name}")
+
+    df = df[required_columns].copy()
+    df.columns = ['username', 'created_at']
+
+    pg_hook = PostgresHook(postgres_conn_id='postgres_default')
+    conn = pg_hook.get_conn()
+    with conn.cursor() as cur:
+        for _, row in df.iterrows():
+            cur.execute("""
+                INSERT INTO channels (
+                    username, total_video_visit, video_count,
+                    start_date_timestamp, followers_count, country,
+                    created_at, update_count
+                ) VALUES (
+                    %s, 0, 0, 1672531200, 0, '-', %s, 0
+                )
+                ON CONFLICT (username) DO UPDATE SET
+                    created_at = EXCLUDED.created_at,
+                    update_count = channels.update_count + 1
+            """, (row['username'], row['created_at']))
+        conn.commit()
+
+def update_tracking_table(file_name: str):
+    pg_hook = PostgresHook(postgres_conn_id='postgres_default')
+    conn = pg_hook.get_conn()
+    with conn.cursor() as cur:
+        cur.execute("""
+            INSERT INTO csv_files (file_name, inserted)
+            VALUES (%s, TRUE)
+            ON CONFLICT (file_name) DO UPDATE SET inserted = TRUE
+        """, (file_name,))
+        conn.commit()

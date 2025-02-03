@@ -1,5 +1,5 @@
 from clickhouse_driver import Client
-from utils.load_sql_query import load_query_from_file
+from utils.utils import load_query_from_file
 from airflow.models import Variable
 
 

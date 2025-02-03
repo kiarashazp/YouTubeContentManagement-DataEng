@@ -3,7 +3,7 @@ from airflow.operators.python import PythonOperator
 from datetime import datetime
 import os
 
-from utils.create_clickhouse_schema import create_clickhouse_schema
+from utils.utils import create_clickhouse_schema
 from tasks.mongo_clickhouse_etl import mongo_clickhouse_etl
 
 import logging

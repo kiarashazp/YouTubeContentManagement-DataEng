@@ -5,8 +5,7 @@ import pytz
 from airflow.providers.mongo.hooks.mongo import MongoHook
 from airflow.models import Variable
 from pendulum import Timezone
-from utils.load_sql_query import load_query_from_file
-from utils.utils import parse_datetime
+from utils.utils import parse_datetime, load_query_from_file
 from clickhouse_driver import Client
 
 # Set up logging
