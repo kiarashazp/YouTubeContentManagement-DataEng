@@ -30,25 +30,27 @@ In Phase 2, the focus shifts to enhancing the pipeline and providing actionable 
 ## Directory Structure
     YouTubeContentManagement-DataEng/
         ├── config/
-        ├── data/
-        │   ├── raw/
-        │   ├── processed/
-        ├── databases/
-        │   ├── mongodb/
-        │   │   ├── init_data_mongo.py
-        │   │   └── README.md
-        │   ├── postgres/
-        │   ├── clickhouse/
+        ├── mongodb/
+        │       └── init_db_mongo.sh
+        │       └── README.md
+        │       └── representational.py
+        ├── sql/
+        │       └── postgres/
+        │           └──init.sql
+        │           └── metabase.sql
+        │           └── README.MD
+        │       └── clickhouse/
+        │           └── materialized_view_silver.sql
+        │           └── reports.sql
+        │           └── README.MD
         ├── docker/
-        │   ├── Dockerfile
-        │   └── docker-compose.yaml
+        │       └── Dockerfile
+        │       └── docker-compose.yaml
+        │       └── README.MD
         ├── workflows/
-        │   ├── tasks/
-        │   ├── utils/
-        │   └── dags/
-        ├── scripts/
-        │   ├── data_loading/
-        │   ├── data_analysis/
+        │       └── tasks/
+        │       └── utils/
+        │       └── dags/
         ├── requirements.txt
         └── README.md
 
