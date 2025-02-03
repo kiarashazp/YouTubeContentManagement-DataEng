@@ -78,12 +78,10 @@ The DAG starts from one day ago.
 **Schedule Interval:**
 The DAG is scheduled to run daily at 7 PM (`0 19 * * *`).
 
-
 ### Variables
 
 - `mongo_batch_size`: Specifies the batch size for reading data from MongoDB. Defaults to `1000`.
 - `BATCH_SIZE_POSTGRES`: Specifies the batch size for reading data from PostgreSQL. Defaults to `10000`.
-
 
 ## Usage
 
