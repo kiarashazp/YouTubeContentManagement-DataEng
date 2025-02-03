@@ -1,7 +1,8 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
-from tasks.transfer_batches import transfer_data_in_batches
+from tasks.pg_to_clickhouse import transfer_data_in_batches
+
 
 default_args = {
     'owner': 'airflow',
@@ -11,7 +12,7 @@ default_args = {
 }
 
 
-dag= DAG(
+dag = DAG(
     'postgres_to_clickhouse_batch_load',
     default_args=default_args,
     description='Batch load data from PostgreSQL to ClickHouse',
@@ -19,7 +20,6 @@ dag= DAG(
     start_date=days_ago(1),
     catchup=False,
 )
-
 
 
 transfer_task = PythonOperator(

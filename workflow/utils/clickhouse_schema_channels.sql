@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS channels2 (
+-- DROP TABLE IF EXISTS channels;
+
+CREATE TABLE IF NOT EXISTS channels (
     id UInt64,
     username String,
     total_video_visit UInt64,

@@ -1,93 +1,64 @@
-# Dockerfile for Airflow Setup
+# Docker Compose Setup for Apache Airflow with MongoDB, PostgreSQL, ClickHouse and Metabase.
 
 ## Overview
-
-This `Dockerfile` sets up the environment needed to run Apache Airflow along with the necessary dependencies for interacting with MongoDB and ClickHouse.
+This Dockerfile sets up the environment needed to run Apache Airflow with dependencies for MongoDB and ClickHouse.
 
 ## Dockerfile Explanation
-
-- **Base Image**: Uses the official Apache Airflow image version 2.10.4.
-- **Root User**: Switches to root user for package installation.
-- **Install Sudo**: Updates package lists and installs the `sudo` package.
-- **Install Build Tools**: Installs `build-essential` for building and compiling software.
-- **Upgrade Pip, Setuptools, and Wheel**: Upgrades `pip`, `setuptools`, and `wheel` Python packages.
-- **Install Python Packages**: Installs specific versions of `apache-airflow-providers-mongo`, `pymongo`, and `clickhouse-driver`.
-- **Airflow User**: Switches back to the airflow user for running processes with non-root privileges.
+- **Base Image**: Official Apache Airflow image (2.10.4).
+- **Installations**: Includes sudo, build-essential, and necessary Python packages (apache-airflow-providers-mongo, pymongo, clickhouse-driver, boto3, python-telegram-bot).
+- **User Permissions**: Switches to root for installations, then back to airflow user for running processes.
 
 ## Installation
 
 ### Using Docker and Docker Compose
-
 1. Clone this repository.
-2. Build and deploy the Docker image using the provided Dockerfile:
-
-    ```sh
+2. Build and deploy the Docker image:
+    ```bash
     docker-compose up --build
     ```
 
-## Dockerfile Explanation
-
-The provided Dockerfile creates an environment with all required dependencies:
-
-- **Base Image**: The Dockerfile uses the official Apache Airflow image version 2.10.4 as the base, which includes a pre-configured environment for running Apache Airflow.
-- **Root User**: It switches to the root user to install necessary packages and updates.
-- **Install Sudo**: Updates package lists and installs the `sudo` package for granting temporary superuser privileges.
-- **Install Build Tools**: Installs `build-essential`, which includes tools required for building and compiling software.
-- **Upgrade Pip, Setuptools, and Wheel**: Upgrades Python utilities `pip`, `setuptools`, and `wheel` to their latest versions.
-- **Install Python Packages**: Installs specific versions of necessary Python packages:
-  - `apache-airflow-providers-mongo` (version 3.0.0)
-  - `pymongo` (version 3.11.4)
-  - `clickhouse-driver`
-- **Airflow User**: Switches back to the airflow user for running processes with non-root privileges.
-
 ## Docker Compose Configuration
-
-The `docker-compose.yml` file sets up the necessary services and their configurations for running Airflow with MongoDB and ClickHouse.
+The `docker-compose.yml` file sets up the necessary services for running Airflow with MongoDB and ClickHouse.
 
 ### Services
-
-1. **Postgres**:
-    - Uses the `postgres:13` image.
-    - Sets environment variables for user and password.
-    - Maps volumes for data persistence and initialization scripts.
-    - Includes healthchecks and resource limits.
-2. **Redis**:
-    - Uses the `redis:7.2-bookworm` image.
-    - Includes healthchecks and sets the exposed port to `6379`.
-3. **Mongo**:
-    - Uses the `mongo:4.4` image.
-    - Sets environment variables for root user and password.
-    - Maps volumes for data persistence.
-    - Includes healthchecks and sets the exposed port to `27017`.
-4. **ClickHouse**:
-    - Uses the `clickhouse/clickhouse-server:latest` image.
-    - Sets environment variables for user and password.
-    - Maps volumes for data persistence.
-    - Includes Ulimits settings for file descriptors.
-5. **Airflow Services (Webserver, Scheduler, Worker, Triggerer, Init)**:
-    - All services use a common setup defined in the `x-airflow-common` configuration.
-    - Environment variables set for Airflow configuration.
-    - Volumes are mapped for Airflow directories such as `dags`, `logs`, `config`, `plugins`, `tasks`, and `utils`.
-    - Each service has specific commands (`webserver`, `scheduler`, `celery worker`, `triggerer`) and healthchecks.
-    - The `airflow-init` service ensures proper initialization and user setup.
-6. **Flower** (Optional):
-    - Uses the Airflow common setup to run Flower for monitoring Celery workers.
-    - Exposes port `5555`.
+- **Postgres**: 
+  - Image: `postgres:13`
+  - Ports: 5432:5432
+  - Volumes for data persistence.
+  - Healthchecks and resource limits.
+- **Redis**: 
+  - Image: `redis:7.2-bookworm`
+  - Exposes port 6379.
+- **Mongo**: 
+  - Image: `mongo:4.4`
+  - Ports: 27017:27017
+  - Volumes for data persistence.
+- **ClickHouse**: 
+  - Image: `clickhouse/clickhouse-server:23.7.6-alpine`
+  - Ports: 8123, 9000, 9009
+  - Volumes for data persistence.
+- **Metabase**: 
+  - Image: `lucasluanp/metabase-with-clickhouse`
+  - Ports: 3000:3000
+  - Environment variables for Metabase configuration.
+- **Airflow Services**: 
+  - Common setup defined in `x-airflow-common`.
+  - Volumes mapped for Airflow directories.
+  - Services include Webserver, Scheduler, Worker, Triggerer.
+- **Flower (Optional)**: 
+  - Monitors Celery workers.
+  - Exposes port 5555.
 
 ## Usage
-
-1. Place the DAG file in your Airflow DAGs folder.
-2. Start the Airflow services using Docker Compose:
-
-    ```sh
-    docker-compose up
+1. Place your DAG file in the Airflow DAGs folder.
+2. Start services:
+    ```bash
+    docker-compose up -d
     ```
-
-3. Access the Airflow web interface at `http://localhost:9090`.
+3. Access the Airflow web interface at [http://localhost:9090](http://localhost:9090).
 4. Trigger the DAG manually or wait for the scheduled run.
 
 ## Notes
-
-- Ensure that your Airflow connections are properly set up for MongoDB (`MONGO_CONN_ID`) and ClickHouse.
-- Adjust the included packages in the Dockerfile based on your environment and requirements.
+- Ensure Airflow connections are set up for MongoDB (`MONGO_CONN_ID`) and ClickHouse.
+- Adjust packages in the Dockerfile as needed.
 
