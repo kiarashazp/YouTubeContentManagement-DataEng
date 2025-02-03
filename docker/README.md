@@ -1,3 +1,4 @@
+![Alt text](dockercomposecontainers.png)
 # Docker Compose Setup for Apache Airflow with MongoDB, PostgreSQL, ClickHouse and Metabase.
 
 ## Overview
