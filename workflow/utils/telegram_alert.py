@@ -41,10 +41,10 @@ def notify_on_failure(context):
     exception = context.get("exception")
 
     message = (
-        f"🚨 Task Failed 🚨\n"
-        f"Task: {task_id}\n"
-        f"Execution Date: {execution_date}\n"
-        f"Error: {str(exception)}"
+        f"🚨 Task Failed 🚨\n\n"
+        f"🆔 Task: {task_id}\n\n"
+        f"⏰ Execution Date: {execution_date}\n\n"
+        f"Error: {str(exception)}\n"
     )
 
     asyncio.run(send_telegram_alert(message))
@@ -62,9 +62,9 @@ def notify_on_success(context):
     execution_date = context.get("logical_date")
 
     message = (
-        f"✅ Task Succeeded ✅\n"
-        f"Task: {task_id}\n"
-        f"Execution Date: {execution_date}"
+        f"✅ Task Succeeded ✅\n\n"
+        f"🆔 Task: {task_id}\n\n"
+        f"⏰ Execution Date: {execution_date}"
     )
 
     asyncio.run(send_telegram_alert(message))
@@ -83,9 +83,9 @@ def notify_on_retry(context):
     exception = context.get("exception")
 
     message = (
-        f"🔄 Task Retry 🔄\n"
-        f"Task: {task_id}\n"
-        f"Execution Date: {execution_date}\n"
+        f"🔄 Task Retry 🔄\n\n"
+        f"🆔 Task: {task_id}\n\n"
+        f"⏰ Execution Date: {execution_date}\n\n"
         f"Error: {str(exception)}"
     )
 
