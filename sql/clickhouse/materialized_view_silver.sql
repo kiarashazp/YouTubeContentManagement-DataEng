@@ -1,35 +1,30 @@
-CREATE MATERIALIZED VIEW silver.events
-ENGINE = MergeTree
-ORDER BY (channel_id, video_id)
-POPULATE AS
+CREATE MATERIALIZED VIEW IF NOT EXISTS silver.events
+ENGINE = AggregatingMergeTree()
+ORDER BY (channel_username, video_owner_username)
+POPULATE
+AS
 SELECT
-    -- Columns from `channels` table
-    ch.id AS channel_id,
-    ch.username AS channel_username,
-    ch.total_video_visit AS channel_total_video_visit,
-    ch.video_count AS channel_video_count,
-    ch.start_date_timestamp AS channel_start_date_timestamp,
-    ch.followers_count AS channel_followers_count,
-    ch.country AS channel_country,
-    ch.created_at AS channel_created_at,
-    ch.update_count AS channel_update_count,
-
-    -- Columns from `videos` table
-    v.id AS video_id,
-    v.owner_username AS video_owner_username,
-    v.owner_id AS video_owner_id,
-    v.title AS video_title,
-    v.tags AS video_tags,
-    v.uid AS video_uid,
-    v.visit_count AS video_visit_count,
-    v.owner_name AS video_owner_name,
-    v.duration AS video_duration,
-    v.comments AS video_comments,
-    v.like_count AS video_like_count,
-    v.is_deleted AS video_is_deleted,
-    v.created_at AS video_created_at,
-    v.expire_at AS video_expire_at,
-    v.update_count AS video_update_count
-FROM bronze.channels AS ch
-INNER JOIN bronze.videos AS v
-    ON ch.username = v.owner_username;
+    videos.id as video_id,
+    videos.title as video_title,
+    videos.tags as video_tags,
+    videos.uid as video_uid,
+    videos.visit_count as video_visit_count,
+    videos.duration as video_duration,
+    videos.comments as video_comments,
+    videos.like_count as video_like_count,
+    videos.is_deleted as video_is_deleted,
+    videos.created_at as video_created_at,
+    videos.expire_at as video_expire_at,
+    videos.update_count as video_update_count,
+    channels.id as channel_id,
+    channels.username as channel_username,
+    channels.total_video_visit as channel_total_video_visit,
+    channels.video_count as channel_video_count,
+    channels.start_date_timestamp as channel_start_date_timestamp,
+    channels.followers_count as channel_followers_count,
+    channels.country as channel_country,
+    channels.created_at as channel_created_at,
+    channels.update_count as channel_update_count
+FROM bronze.videos AS videos
+JOIN bronze.channels AS channels 
+ON videos.owner_username = channels.username;
