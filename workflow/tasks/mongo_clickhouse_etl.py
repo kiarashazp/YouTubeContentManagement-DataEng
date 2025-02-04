@@ -59,9 +59,9 @@ def mongo_clickhouse_etl(**kwargs):
                                 'comments': obj_data.get('comments', 0),
                                 'like_count': obj_data.get('like_count', 0),
                                 'is_deleted': obj_data.get('is_deleted', False),
-                                'created_at': obj_data.get('created_at', datetime.datetime.now()),
-                                'expire_at': obj_data.get('expire_at', datetime.datetime.now()),
-                                'update_count': obj_data.get('update_count', 0)
+                                'created_at': doc.get('created_at', datetime.datetime.now()),
+                                'expire_at': doc.get('expire_at', datetime.datetime.now()),
+                                'update_count': doc.get('update_count', 0)
                             }
                             batch.append(processed_doc)
                             processed_ids.add(str(doc['_id']))

@@ -72,7 +72,7 @@ def etl_mongo_to_clickhouse(**kwargs):
                 for doc in batch_data:
                     obj_data = doc.get('object', {})
                     videos_values = {
-                        'id': str(doc.get('id', '')),
+                        'id': str(doc.get('_id', '')),
                         'owner_username': obj_data.get('owner_username', ''),
                         'owner_id': obj_data.get('owner_id', ''),
                         'title': obj_data.get('title', ''),
