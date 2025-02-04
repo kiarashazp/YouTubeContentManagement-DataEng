@@ -11,6 +11,7 @@ Welcome to our project documentation. Below you will find links to the different
 5. [Airflow DAGs and Tasks](./docs/airflow.md)
 6. [ClickHouse Queries and Reports](./docs/clickhouse.md)
 
+
 ## Introduction
 
 A brief overview of the project can be found in the [Introduction section](./docs/introduction.md).
