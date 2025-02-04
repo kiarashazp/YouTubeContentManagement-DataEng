@@ -6,8 +6,10 @@ Welcome to our project documentation. Below you will find links to the different
 
 1. [Introduction](./docs/introduction.md)
 2. [Docker Compose and Containers](./docs/docker.md)
-3. [Airflow DAGs and Tasks](./docs/airflow.md)
-4. [ClickHouse Queries and Reports](./docs/clickhouse.md)
+3. [MongoDB Initialization and Data Transformation](./docs/mongodb.md)
+4. [PostgreSQL Initialization and Data Import](./docs/postgresql.md)
+5. [Airflow DAGs and Tasks](./docs/airflow.md)
+6. [ClickHouse Queries and Reports](./docs/clickhouse.md)
 
 
 ## Introduction
