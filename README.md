@@ -1,63 +1,38 @@
-![Alt text](qbc8g5project.png)
-# YouTube Content Management Project
+# Project Documentation
 
-## Overview
-This project focuses on building a robust data pipeline for managing and analyzing YouTube content data. The project is divided into two phases, each with specific goals and deliverables.
+Welcome to our project documentation. Below you will find links to the different sections of our project:
 
-## Phase 1: Data Pipeline Setup and Management
-The primary objective of Phase 1 is to establish a comprehensive data pipeline for processing and analyzing pre-extracted YouTube data. Key tasks include:
+## Table of Contents
 
-1. **Data Preparation**: Work with pre-extracted YouTube data (no APIs are used in this phase).
-2. **Database Setup**: Configure and set up PostgreSQL and MongoDB for structured and unstructured data storage.
-3. **Data Loading**: Load the pre-extracted data into the databases using various methods.
-4. **Workflow Management**: Use Apache Airflow to orchestrate and manage the data pipeline workflow.
-5. **Data Analysis**: Transfer the processed data to ClickHouse for efficient and scalable final analysis.
-
-## Phase 2: Automation and Analytics
-In Phase 2, the focus shifts to enhancing the pipeline and providing actionable insights through automation and visualization. Key tasks include:
-
-1. **Process Automation**: Implement automation to streamline data processing and reduce manual intervention.
-2. **Incremental Processing**: Support incremental data processing to handle updates efficiently.
-3. **Analytical Dashboards**: Build interactive dashboards using Metabase to visualize insights and trends from the analyzed data.
-
-## Tools and Technologies
-- **Databases**: PostgreSQL, MongoDB, ClickHouse
-- **Workflow Management**: Apache Airflow
-- **Data Visualization**: Metabase
-- **Programming Languages**: Python, SQL
-- **Other Tools**: Docker
-
-## Directory Structure
-    YouTubeContentManagement-DataEng/
-        ├── config/
-        ├── data/
-        │   ├── raw/
-        │   ├── processed/
-        ├── databases/
-        │   ├── mongodb/
-        │   │   ├── init_data_mongo.py
-        │   │   └── README.md
-        │   ├── postgres/
-        │   ├── clickhouse/
-        ├── docker/
-        │   ├── Dockerfile
-        │   └── docker-compose.yaml
-        ├── workflows/
-        │   ├── tasks/
-        │   ├── utils/
-        │   └── dags/
-        ├── scripts/
-        │   ├── data_loading/
-        │   ├── data_analysis/
-        ├── requirements.txt
-        └── README.md
+1. [Introduction](./docs/introduction.md)
+2. [Docker Compose and Containers](./docs/docker.md)
+3. [MongoDB Initialization and Data Transformation](./docs/mongodb.md)
+4. [PostgreSQL Initialization and Data Import](./docs/postgresql.md)
+5. [Airflow DAGs and Tasks](./docs/airflow.md)
+6. [ClickHouse Queries and Reports](./docs/clickhouse.md)
 
 
-## Getting Started
-To set up and run this project locally, follow the instructions in the Setup Guide.
+## Introduction
 
-## Contributing
-Contributions are welcome! Please read the Contribution Guidelines for details on how to get started.
+A brief overview of the project can be found in the [Introduction section](./docs/introduction.md).
 
-## License
-This project is licensed under the MIT License.
+## Docker Compose and Containers
+
+For details on Docker Compose and containers, please refer to the [Docker documentation](./docs/docker.md).
+
+## MongoDB Initialization and Data Transformation
+
+To understand how MongoDB is initialized and data is transformed, check out the [MongoDB documentation](./docs/mongodb.md).
+
+## PostgreSQL Initialization and Data Import
+
+For information on initializing PostgreSQL and importing data, refer to the [PostgreSQL documentation](./docs/postgresql.md).
+
+## Airflow DAGs and Tasks
+
+To learn more about Airflow DAGs and tasks, check out the [Airflow documentation](./docs/airflow.md).
+
+## ClickHouse Queries and Reports
+
+Information on ClickHouse queries and reports can be found in the [ClickHouse documentation](./docs/clickhouse.md).
+
