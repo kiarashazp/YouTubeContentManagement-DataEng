@@ -90,6 +90,8 @@ This report aims to provide an aggregated view of the growth metrics of social m
 
 This report focuses on identifying and tracking the top-performing social media channels based on various growth metrics.
 
+![Alt text](Screenshot%202025-02-07%20at%2012.10.35.png)
+
 ## Table Creation
 
 A table named `gold.top_channels` is created to store metrics related to the top-performing social media channels. This table leverages the `AggregatingMergeTree` engine to efficiently aggregate and store data. The table includes the following fields:
@@ -130,6 +132,8 @@ This report aims to provide an insightful overview of the top-performing social 
 
 This report focuses on analyzing video engagement metrics such as visit counts, like counts, and engagement rates over time.
 
+![Alt text](Screenshot%202025-02-07%20at%2012.11.23.png)
+
 ## Table Creation
 
 A table named `gold.video_engagement` is created to store video engagement metrics. This table leverages the `AggregatingMergeTree` engine to aggregate and store data efficiently. The table includes the following fields:
@@ -168,6 +172,8 @@ This report aims to provide a detailed view of video engagement metrics over tim
 
 This report focuses on analyzing the popularity of different types of content based on tags, video counts, total visits, and average likes over time.
 
+![Alt text](Screenshot%202025-02-07%20at%2012.15.51.png)
+
 ## Table Creation
 
 A table named `gold.content_popularity` is created to store metrics related to the popularity of content tagged with specific keywords. This table leverages the `AggregatingMergeTree` engine to efficiently aggregate and store data. The table includes the following fields:
@@ -205,6 +211,8 @@ This report aims to provide insights into the popularity of different types of c
 # Report: Geographic Distribution
 
 This report focuses on analyzing the geographic distribution of social media channels based on various metrics such as channel count, total followers, and total video visits over time.
+
+![Alt text](Screenshot%202025-02-07%20at%2012.08.35.png)
 
 ## Table Creation
 
