@@ -1,6 +1,6 @@
 # Project Documentation
 
-Welcome to our project documentation. Below you will find links to the different sections of our project:
+Welcome to the YouTube Content Management ETL Pipeline repository! This project is designed to extract, transform, and load (ETL) data from MongoDB and PostgreSQL into ClickHouse for advanced reporting and visualization through Metabase. Below you will find links to the different sections of our project:
 
 ## Table of Contents
 
